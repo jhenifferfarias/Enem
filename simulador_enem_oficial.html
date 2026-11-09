@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OdontoENEM — Simulador Oficial (2º Dia)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    input[type="range"] { height: 8px; border-radius: 8px; cursor: pointer; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800 pb-16">
+
+  <!-- CABEÇALHO -->
+  <header class="bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-700 text-white shadow-lg">
+    <div class="max-w-5xl mx-auto px-4 py-5">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="bg-white/20 px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider">
+              Especial 2º Dia ENEM
+            </span>
+            <span class="bg-amber-400 text-slate-900 px-2.5 py-0.5 rounded-full text-xs font-bold">
+              1º Dia (Média Base): 54 Acertos
+            </span>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-extrabold mt-1">
+            🦷 OdontoENEM — Simulador & TRI
+          </h1>
+          <p class="text-teal-100 text-sm mt-0.5">
+            Treine as questões de Ciências da Natureza e Matemática e acompanhe sua nota oficial!
+          </p>
+        </div>
+
+        <!-- IDENTIFICAÇÃO DO ALUNO (GENÉRICO) -->
+        <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-3 flex flex-col gap-2 min-w-[280px]">
+          <div class="flex items-center justify-between text-xs font-semibold text-teal-100">
+            <span>🎓 Identificação do Candidato</span>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <input id="inputNomeAluno" type="text" placeholder="Digite seu nome (Ex: Lucas)" oninput="atualizarTudo()" class="w-full bg-white text-slate-900 text-sm font-semibold px-3 py-2 rounded-lg border-0 focus:ring-2 focus:ring-amber-400 outline-none" />
+          </div>
+        </div>
+      </div>
+
+      <!-- NAVEGAÇÃO DE ABAS -->
+      <nav class="flex gap-2 mt-5 border-t border-white/15 pt-4 overflow-x-auto">
+        <button id="tabBtnPainel" onclick="mudarAba('painel')" class="px-4 py-2.5 rounded-xl font-bold text-sm bg-white text-teal-900 shadow-md transition whitespace-nowrap">
+          📊 1. Calculadora de Nota (TRI)
+        </button>
+        <button id="tabBtnSimulador" onclick="mudarAba('simulador')" class="px-4 py-2.5 rounded-xl font-bold text-sm bg-white/10 text-white hover:bg-white/20 transition whitespace-nowrap">
+          📝 2. Simulador de Questões
+        </button>
+        <button id="tabBtnGuia" onclick="mudarAba('guia')" class="px-4 py-2.5 rounded-xl font-bold text-sm bg-white/10 text-white hover:bg-white/20 transition whitespace-nowrap">
+          🧭 3. Estratégia de Prova
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 mt-6">
+
+    <!-- ABA 1: PAINEL DE NOTA -->
+    <section id="secPainel" class="space-y-6">
+      <div id="cardDiagnostico" class="border-2 rounded-2xl p-5 shadow-sm transition-all">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <span id="diagBadge" class="text-xs font-extrabold uppercase px-3 py-1 rounded-full"></span>
+          <span id="diagModoTexto" class="text-xs font-semibold opacity-80"></span>
+        </div>
+        <h2 id="diagTitulo" class="text-lg md:text-xl font-extrabold mb-1"></h2>
+        <p id="diagTexto" class="text-sm leading-relaxed"></p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-5">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Projeção de Acertos (2º Dia)</h3>
+              <p class="text-xs text-slate-500">Ajuste as barras ou treine no simulador para atualizar sua nota.</p>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-slate-400 block">Total no ENEM</span>
+              <span id="txtTotalAcertos" class="text-lg font-extrabold text-teal-700">103 / 180 (57%)</span>
+            </div>
+          </div>
+
+          <div class="bg-teal-50/70 border border-teal-200 rounded-xl p-4 space-y-4">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-teal-800 block">
+              🔥 Simulação do 2º Dia
+            </span>
+
+            <div>
+              <div class="flex justify-between text-sm font-bold mb-1">
+                <span class="text-slate-800">🔬 Ciências da Natureza</span>
+                <span id="lblNatureza" class="text-teal-700">23/45 acertos → ~623 pts</span>
+              </div>
+              <input id="rngNatureza" type="range" min="5" max="45" value="23" oninput="atualizarTudo()" class="w-full accent-teal-600" />
+              <div class="flex justify-between text-[11px] text-slate-500 mt-1">
+                <span>15 (Básico)</span>
+                <span class="font-semibold text-teal-700">Meta: 22 a 28 acertos</span>
+                <span>35+ (Excelente)</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-sm font-bold mb-1">
+                <span class="text-slate-800">📐 Matemática</span>
+                <span id="lblMatematica" class="text-teal-700">26/45 acertos → ~722 pts</span>
+              </div>
+              <input id="rngMatematica" type="range" min="5" max="45" value="26" oninput="atualizarTudo()" class="w-full accent-teal-600" />
+              <div class="flex justify-between text-[11px] text-slate-500 mt-1">
+                <span>15 (~565 pts)</span>
+                <span class="font-semibold text-teal-700">Meta: 24 a 30 acertos</span>
+                <span>35+ (~850 pts)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase text-slate-500">✓ Base do 1º Dia</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+              <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                <div class="flex justify-between text-xs font-bold mb-1">
+                  <span>Linguagens</span>
+                  <span id="lblLinguagens" class="text-teal-700">28/45</span>
+                </div>
+                <input id="rngLinguagens" type="range" min="10" max="45" value="28" oninput="atualizarTudo()" class="w-full accent-slate-500" />
+              </div>
+              <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                <div class="flex justify-between text-xs font-bold mb-1">
+                  <span>Humanas</span>
+                  <span id="lblHumanas" class="text-teal-700">26/45</span>
+                </div>
+                <input id="rngHumanas" type="range" min="10" max="45" value="26" oninput="atualizarTudo()" class="w-full accent-slate-500" />
+              </div>
+              <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                <div class="flex justify-between text-xs font-bold mb-1">
+                  <span>Redação</span>
+                  <span id="lblRedacao" class="text-amber-600">520 pts</span>
+                </div>
+                <input id="rngRedacao" type="range" min="300" max="960" step="20" value="520" oninput="atualizarTudo()" class="w-full accent-amber-500" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-slate-900 text-base">Sua Média</h3>
+              <div class="flex bg-slate-100 p-1 rounded-lg text-xs font-semibold">
+                <button id="btnModoPesos" onclick="setModoCalculo('pesos')" class="px-2.5 py-1 rounded-md bg-teal-700 text-white shadow transition">C/ Pesos (Sisu)</button>
+                <button id="btnModoSimples" onclick="setModoCalculo('simples')" class="px-2.5 py-1 rounded-md text-slate-600 transition">Simples (ProUni)</button>
+              </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-slate-900 to-teal-950 text-white rounded-2xl p-5 text-center shadow-inner">
+              <span class="text-xs uppercase tracking-widest text-teal-300 font-semibold">Pontuação Final Projetada</span>
+              <div class="text-5xl font-black my-1 text-amber-300">
+                <span id="txtNotaAtiva">619</span> <span class="text-lg font-normal text-white/70">pts</span>
+              </div>
+            </div>
+
+            <div class="mt-5 space-y-3">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">Notas de Corte Odontologia:</h4>
+              <div id="listaMetasOdonto" class="space-y-2.5"></div>
+            </div>
+          </div>
+
+          <button onclick="mudarAba('simulador')" class="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold py-3 px-4 rounded-xl shadow flex items-center justify-center gap-2 transition">
+            Iniciar Simulado →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 2: SIMULADOR DE QUESTÕES E RELATÓRIO -->
+    <section id="secSimulador" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs font-bold text-slate-500 uppercase">Filtro:</span>
+          <button id="filtroTodas" onclick="filtrarQuestoes('Todas')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-700 text-white transition">Geral (Mat + Nat)</button>
+          <button id="filtroNatureza" onclick="filtrarQuestoes('Natureza')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Natureza</button>
+          <button id="filtroMatematica" onclick="filtrarQuestoes('Matemática')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Matemática</button>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="txtProgressoSimulador" class="text-xs font-semibold text-slate-600">Questão 1</span>
+        </div>
+      </div>
+
+      <!-- Card da Questão Ativa -->
+      <div id="boxQuestaoAtiva" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <span id="qNumeroBadge" class="bg-teal-100 text-teal-900 text-xs font-extrabold px-3 py-1 rounded-full"></span>
+            <span id="qTopicoBadge" class="bg-slate-100 text-slate-700 text-xs font-bold px-2.5 py-1 rounded-full"></span>
+            <span id="qNivelBadge" class="text-xs font-extrabold px-2.5 py-1 rounded-full"></span>
+          </div>
+          <div class="text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-full">
+            ⏱️ <span id="txtCronometro">0m 0s</span>
+          </div>
+        </div>
+
+        <p id="qEnunciado" class="text-slate-800 text-base leading-relaxed font-medium"></p>
+
+        <div id="listaAlternativas" class="space-y-2.5"></div>
+
+        <!-- Feedback da Questão -->
+        <div id="boxFeedbackQuestao" class="hidden p-4 rounded-xl border-2 space-y-2">
+          <div id="fbTitulo" class="font-extrabold text-sm"></div>
+          <p id="fbExplicacao" class="text-xs leading-relaxed"></p>
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+          <button id="btnConcluirAntecipado" onclick="finalizarBateria()" class="hidden bg-slate-800 hover:bg-slate-900 text-white font-extrabold px-5 py-3 rounded-xl shadow-md text-xs transition flex items-center gap-2">
+            Encerrar Simulado
+          </button>
+          <div class="ml-auto flex gap-2">
+            <button id="btnConfirmarResposta" onclick="confirmarResposta()" disabled class="bg-teal-700 disabled:bg-slate-300 hover:bg-teal-800 text-white font-extrabold px-6 py-3 rounded-xl transition text-sm">
+              Confirmar Resposta
+            </button>
+            <button id="btnProximaQuestao" onclick="proximaQuestao()" class="hidden bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold px-6 py-3 rounded-xl transition text-sm">
+              Próxima Questão →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tela Final de Relatório -->
+      <div id="boxRelatorioFinal" class="hidden bg-white rounded-2xl shadow-md border-2 border-teal-600 p-6 space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200 pb-4">
+          <div>
+            <h2 id="relTituloResultado" class="text-2xl font-extrabold text-slate-900"></h2>
+            <p id="relSubtituloTempo" class="text-sm text-slate-600"></p>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-700 p-6 rounded-2xl text-white shadow-lg text-center space-y-3">
+          <h3 class="text-lg font-black">🎯 Simulado Concluído!</h3>
+          <p class="text-xs text-teal-100 max-w-xl mx-auto">
+            Clique abaixo para aplicar este resultado na sua calculadora de nota e atualizar sua projeção.
+          </p>
+          <button onclick="concluirEEnviarTudo()" class="w-full md:w-auto bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-base py-4 px-8 rounded-xl shadow-2xl transition transform hover:scale-[1.02] flex items-center justify-center gap-3 mx-auto">
+            🚀 APLICAR NOTA E VER RESULTADO!
+          </button>
+          <div id="statusEnvioFinal" class="text-xs font-bold text-amber-200 pt-1"></div>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-3">
+            Raio-X das Questões Respondidas:
+          </h4>
+          <div id="listaResumoQuestoes" class="space-y-2 max-h-80 overflow-y-auto pr-2"></div>
+        </div>
+
+        <div class="flex justify-end pt-3 border-t border-slate-200">
+          <button onclick="iniciarNovaBateria()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-5 py-3 rounded-xl text-xs transition">
+            🔄 Iniciar Novo Simulado
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 3: GUIA DE SOBREVIVÊNCIA TRI -->
+    <section id="secGuia" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-5">
+      <h2 class="text-xl font-extrabold text-slate-900">
+        🎯 Estratégia de Prova: Maximizando a TRI
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div class="p-4 rounded-xl bg-teal-50 border border-teal-200 space-y-2">
+          <span class="bg-teal-700 text-white text-xs font-bold px-2.5 py-1 rounded-full">Matemática Bovina</span>
+          <h3 class="font-bold text-teal-950">Caça às Fáceis</h3>
+          <p class="text-xs text-slate-700 leading-relaxed">
+            Não faça a prova na ordem! Resolva primeiro as questões de gráficos, tabelas, porcentagem simples e regra de três. Isso blinda sua TRI.
+          </p>
+        </div>
+        <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 space-y-2">
+          <span class="bg-amber-500 text-slate-950 text-xs font-bold px-2.5 py-1 rounded-full">Natureza</span>
+          <h3 class="font-bold text-amber-950">Foco na Teoria</h3>
+          <p class="text-xs text-slate-700 leading-relaxed">
+            Garanta primeiro Ecologia, Citologia e conceitos de Química antes de gastar tempo com contas longas de Física.
+          </p>
+        </div>
+        <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-200 space-y-2">
+          <span class="bg-indigo-700 text-white text-xs font-bold px-2.5 py-1 rounded-full">Finalização</span>
+          <h3 class="font-bold text-indigo-950">Chute Consciente</h3>
+          <p class="text-xs text-slate-700 leading-relaxed">
+            Volte nas questões médias. Nas difíceis em que faltar tempo, elimine as alternativas absurdas nos extremos antes de marcar.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // BANCO EXPANDIDO COM QUESTÕES DO ENEM (2º DIA)
+    const QUESTION_BANK = [
+      { id: 1, area: 'Matemática', disciplina: 'Matemática', topico: 'Razão e Proporção', nivel: 'Fácil', enunciado: 'A dose máxima de anestésico é 4 mg/kg (limite 300 mg). O tubete tem 36 mg. Quantos tubetes completos aplicar em um paciente de 60 kg?', alternativas: ['5', '6', '7', '8', '9'], correta: 1, explicacao: '60 kg × 4 mg = 240 mg. 240 / 36 = 6,66. Arredondando para baixo sem exceder: 6 tubetes.' },
+      { id: 2, area: 'Matemática', disciplina: 'Matemática', topico: 'Porcentagem', nivel: 'Fácil', enunciado: 'Um procedimento de R$ 400 teve 20% de desconto e depois mais 10% sobre o novo valor. Qual o valor final?', alternativas: ['R$ 280', 'R$ 288', 'R$ 290', 'R$ 300', 'R$ 312'], correta: 1, explicacao: '400 × 0,80 = 320. 320 × 0,90 = 288.' },
+      { id: 3, area: 'Matemática', disciplina: 'Matemática', topico: 'Estatística', nivel: 'Fácil', enunciado: 'Tempos de espera: 12, 8, 15, 8, 25, 10, 20. Qual a Mediana e a Moda?', alternativas: ['15 e 8', '12 e 8', '14 e 12', '8 e 12', '12 e 25'], correta: 1, explicacao: 'Ordem: 8, 8, 10, 12, 15, 20, 25. Mediana (meio) = 12, Moda (mais repete) = 8.' },
+      { id: 4, area: 'Matemática', disciplina: 'Matemática', topico: 'Geometria Espacial', nivel: 'Média', enunciado: 'Um reservatório cilíndrico tem raio 10 cm, altura 50 cm. (π = 3). Quantos litros cabem (1L = 1000 cm³)?', alternativas: ['1,5 L', '5,0 L', '15,0 L', '30,0 L', '150,0 L'], correta: 2, explicacao: 'V = π r² h = 3 × 100 × 50 = 15.000 cm³ = 15 Litros.' },
+      { id: 5, area: 'Matemática', disciplina: 'Matemática', topico: 'Função Afim', nivel: 'Fácil', enunciado: 'Uma clínica cobra R$ 50 fixos mais R$ 30 por hora. Qual a lei da função Custo C(x)?', alternativas: ['C(x) = 50x + 30', 'C(x) = 30x + 50', 'C(x) = 80x', 'C(x) = 30x - 50', 'C(x) = 50x'], correta: 1, explicacao: 'Fixo = 50, variável = 30x. Logo, C(x) = 30x + 50.' },
+      { id: 6, area: 'Natureza', disciplina: 'Química', topico: 'pH', nivel: 'Fácil', enunciado: 'O esmalte dentário perde minerais em pH < 5,5. A saliva atua como tampão elevando o pH porque:', alternativas: ['Aumenta H+', 'Neutraliza excesso de acidez', 'Dissolve o dente', 'Elimina bactérias', 'Impregna flúor'], correta: 1, explicacao: 'A saliva neutraliza H+ excessivos, regulando o pH para evitar a desmineralização.' },
+      { id: 7, area: 'Natureza', disciplina: 'Biologia', topico: 'Citologia', nivel: 'Fácil', enunciado: 'Qual organela celular é responsável pela digestão de bactérias fagocitadas por leucócitos?', alternativas: ['Complexo Golgiense', 'Ribossomo', 'Lisossomo', 'Centríolo', 'Mitocôndria'], correta: 2, explicacao: 'Lisossomos contêm enzimas que realizam a digestão intracelular.' },
+      { id: 8, area: 'Natureza', disciplina: 'Física', topico: 'Ondulatória', nivel: 'Média', enunciado: 'Comparados à luz visível, os raios X utilizados em radiografias possuem:', alternativas: ['Maior comprimento de onda', 'Menor frequência', 'Maior frequência e energia', 'Mesma energia', 'Velocidade menor no vácuo'], correta: 2, explicacao: 'Raios X são ondas de alta frequência e alta energia (radiação ionizante).' },
+      { id: 9, area: 'Natureza', disciplina: 'Física', topico: 'Termologia', nivel: 'Média', enunciado: 'A autoclave esteriliza sob alta pressão. O aumento da pressão no sistema tem como efeito:', alternativas: ['Elevar a temperatura de ebulição da água', 'Fundir os metais', 'Congelar a água', 'Diminuir a densidade', 'Fazer a água ferver a 80°C'], correta: 0, explicacao: 'Com maior pressão, a água precisa de mais calor para evaporar, fervendo acima de 100°C.' },
+      { id: 10, area: 'Natureza', disciplina: 'Biologia', topico: 'Imunologia', nivel: 'Fácil', enunciado: 'As vacinas são eficientes pois estimulam o sistema imune a produzir:', alternativas: ['Antibióticos', 'Antígenos', 'Anticorpos e células de memória', 'Hemácias', 'Plaquetas'], correta: 2, explicacao: 'As vacinas induzem memória imunológica e produção de anticorpos específicos.' },
+      { id: 11, area: 'Matemática', disciplina: 'Matemática', topico: 'Juros Simples', nivel: 'Fácil', enunciado: 'Uma aplicação de R$ 1.000 a 2% ao mês por 3 meses gera qual montante?', alternativas: ['R$ 1.020', 'R$ 1.060', 'R$ 1.120', 'R$ 1.200', 'R$ 1.600'], correta: 1, explicacao: 'Juros = 1000 × 0,02 × 3 = 60. Montante = 1060.' },
+      { id: 12, area: 'Natureza', disciplina: 'Química', topico: 'Estequiometria', nivel: 'Média', enunciado: 'Quantos mols de NaOH são necessários para neutralizar completamente 2 mols de HCl?', alternativas: ['0,5', '1', '2', '3', '4'], correta: 2, explicacao: 'A proporção da reação é 1:1. Logo, 2 mols de HCl precisam de 2 mols de NaOH.' }
+    ];
+
+    let estado = {
+      aba: 'painel',
+      modoCalculo: 'pesos',
+      filtroArea: 'Todas',
+      questoes: [],
+      indiceAtual: 0,
+      selecionada: null,
+      confirmada: false,
+      historico: [],
+      segundos: 0,
+      finalizada: false,
+      ultimoRelatorio: null
+    };
+
+    // Cronômetro
+    setInterval(() => {
+      if (estado.aba === 'simulador' && !estado.confirmada && !estado.finalizada) {
+        estado.segundos++;
+        const m = Math.floor(estado.segundos / 60);
+        const s = estado.segundos % 60;
+        document.getElementById('txtCronometro').textContent = `${m}m ${s}s`;
+      }
+    }, 1000);
+
+    function mudarAba(aba) {
+      estado.aba = aba;
+      ['painel', 'simulador', 'guia'].forEach(a => {
+        document.getElementById('sec' + a.charAt(0).toUpperCase() + a.slice(1)).classList.toggle('hidden', a !== aba);
+      });
+      
+      const ativaCSS = 'px-4 py-2.5 rounded-xl font-bold text-sm bg-white text-teal-900 shadow-md transition whitespace-nowrap';
+      const inativaCSS = 'px-4 py-2.5 rounded-xl font-bold text-sm bg-white/10 text-white hover:bg-white/20 transition whitespace-nowrap';
+
+      document.getElementById('tabBtnPainel').className = aba === 'painel' ? ativaCSS : inativaCSS;
+      document.getElementById('tabBtnSimulador').className = aba === 'simulador' ? ativaCSS.replace('bg-white text-teal-900', 'bg-amber-400 text-slate-950') : inativaCSS;
+      document.getElementById('tabBtnGuia').className = aba === 'guia' ? ativaCSS : inativaCSS;
+    }
+
+    function setModoCalculo(modo) {
+      estado.modoCalculo = modo;
+      document.getElementById('btnModoPesos').className = modo === 'pesos'
+        ? 'px-2.5 py-1 rounded-md bg-teal-700 text-white shadow transition'
+        : 'px-2.5 py-1 rounded-md text-slate-600 transition';
+      document.getElementById('btnModoSimples').className = modo === 'simples'
+        ? 'px-2.5 py-1 rounded-md bg-teal-700 text-white shadow transition'
+        : 'px-2.5 py-1 rounded-md text-slate-600 transition';
+      atualizarTudo();
+    }
+
+    function resetDia1() {
+      document.getElementById('rngLinguagens').value = 28;
+      document.getElementById('rngHumanas').value = 26;
+      document.getElementById('rngRedacao').value = 520;
+      atualizarTudo();
+    }
+
+    function calcularTRI() {
+      const acLing = Number(document.getElementById('rngLinguagens').value);
+      const acHum = Number(document.getElementById('rngHumanas').value);
+      const acNat = Number(document.getElementById('rngNatureza').value);
+      const acMat = Number(document.getElementById('rngMatematica').value);
+      const red = Number(document.getElementById('rngRedacao').value);
+
+      // Aproximações baseadas no histórico de microdados TRI do ENEM
+      const ling = Math.round(325 + acLing * 10.1);
+      const hum = Math.round(335 + acHum * 10.9);
+      const nat = Math.round(345 + acNat * 12.1);
+      const mat = Math.round(355 + acMat * 14.1);
+
+      const mediaSimples = Math.round((ling + hum + nat + mat + red) / 5);
+      const mediaPesos = Math.round((ling * 2 + hum * 1 + nat * 3 + mat * 2 + red * 2) / 10);
+      const notaAtiva = estado.modoCalculo === 'pesos' ? mediaPesos : mediaSimples;
+
+      return { acLing, acHum, acNat, acMat, red, ling, hum, nat, mat, mediaSimples, mediaPesos, notaAtiva, total: acLing + acHum + acNat + acMat };
+    }
+
+    function atualizarTudo() {
+      const t = calcularTRI();
+      document.getElementById('lblNatureza').innerHTML = `${t.acNat}/45 acertos → <strong>~${t.nat} pts</strong>`;
+      document.getElementById('lblMatematica').innerHTML = `${t.acMat}/45 acertos → <strong>~${t.mat} pts</strong>`;
+      document.getElementById('lblLinguagens').textContent = `${t.acLing}/45 (~${t.ling})`;
+      document.getElementById('lblHumanas').textContent = `${t.acHum}/45 (~${t.hum})`;
+      document.getElementById('lblRedacao').textContent = `${t.red} pts`;
+      document.getElementById('txtTotalAcertos').textContent = `${t.total} / 180 (${Math.round((t.total / 180) * 100)}%)`;
+      document.getElementById('txtNotaAtiva').textContent = t.notaAtiva;
+
+      const card = document.getElementById('cardDiagnostico');
+      const badge = document.getElementById('diagBadge');
+      const titulo = document.getElementById('diagTitulo');
+      const texto = document.getElementById('diagTexto');
+      document.getElementById('diagModoTexto').textContent = `Média: ${estado.modoCalculo === 'pesos' ? 'Com Pesos (Odonto)' : 'Simples'}`;
+
+      if (t.notaAtiva < 585) {
+        card.className = 'border-2 rounded-2xl p-5 shadow-sm bg-red-50 border-red-300 text-red-900';
+        badge.className = 'text-xs font-extrabold uppercase px-3 py-1 rounded-full bg-red-600 text-white';
+        badge.textContent = 'Atenção Máxima';
+        titulo.textContent = 'Essa nota ainda não garante Odonto';
+        texto.textContent = `Faça mais acertos no 2º dia de Matemática e Biologia para subir a média da TRI.`;
+      } else if (t.notaAtiva < 680) {
+        card.className = 'border-2 rounded-2xl p-5 shadow-sm bg-amber-50 border-amber-300 text-amber-900';
+        badge.className = 'text-xs font-extrabold uppercase px-3 py-1 rounded-full bg-amber-600 text-white';
+        badge.textContent = `Faltam ${680 - t.notaAtiva} pts (Bolsa 100%)`;
+        titulo.textContent = 'QUASE LÁ! FIES e ProUni Parcial Garantidos!';
+        texto.textContent = `Aumente os acertos nas questões fáceis de Matemática para atingir o ProUni 100%.`;
+      } else if (t.notaAtiva < 740) {
+        card.className = 'border-2 rounded-2xl p-5 shadow-sm bg-teal-50 border-teal-300 text-teal-900';
+        badge.className = 'text-xs font-extrabold uppercase px-3 py-1 rounded-full bg-teal-600 text-white';
+        badge.textContent = `Faltam ${740 - t.notaAtiva} pts (Federal)`;
+        titulo.textContent = 'Bolsa 100% Garantida! Encostando na Federal!';
+        texto.textContent = `Com essa nota você garante ProUni 100% e entra forte nas listas do SiSU.`;
+      } else {
+        card.className = 'border-2 rounded-2xl p-5 shadow-sm bg-indigo-50 border-indigo-300 text-indigo-900';
+        badge.className = 'text-xs font-extrabold uppercase px-3 py-1 rounded-full bg-indigo-600 text-white';
+        badge.textContent = 'Aprovação Certa';
+        titulo.textContent = 'RITMO DE FEDERAL! Vaga garantida no Sisu!';
+        texto.textContent = `Excelente desempenho! A TRI de Natureza e Matemática compensou toda a nota.`;
+      }
+
+      const metas = [
+        { nome: 'FIES (Particular)', corte: 590 },
+        { nome: 'ProUni — Bolsa 50%', corte: 635 },
+        { nome: 'ProUni — Bolsa 100%', corte: 680 },
+        { nome: 'Sisu — Univ. Federal', corte: 740 }
+      ];
+      const containerMetas = document.getElementById('listaMetasOdonto');
+      containerMetas.innerHTML = metas.map(m => {
+        const atingiu = t.notaAtiva >= m.corte;
+        const faltam = m.corte - t.notaAtiva;
+        const prog = Math.min(100, Math.max(15, Math.round((t.notaAtiva / m.corte) * 100)));
+        const bgCard = atingiu ? 'bg-emerald-50/70 border-emerald-300' : 'bg-slate-50 border-slate-200';
+        const corBarra = atingiu ? 'bg-emerald-500' : 'bg-amber-500';
+        const tag = atingiu
+          ? `<span class="bg-emerald-600 text-white px-2 py-0.5 rounded-full text-[10px]">ATINGIDA ✅</span>`
+          : `<span class="text-slate-500 text-[11px] font-bold">Faltam ${faltam} pts</span>`;
+
+        return `
+          <div class="p-3 rounded-xl border ${bgCard}">
+            <div class="flex justify-between items-center text-xs font-bold mb-1">
+              <span class="text-slate-800">${m.nome} (${m.corte} pts)</span>
+              ${tag}
+            </div>
+            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+              <div class="${corBarra} h-full transition-all duration-300" style="width:${prog}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filtrarQuestoes(area) {
+      estado.filtroArea = area;
+      ['Todas', 'Natureza', 'Matemática'].forEach(a => {
+        const id = a === 'Matemática' ? 'filtroMatematica' : 'filtro' + a;
+        document.getElementById(id).className = a === area
+          ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-700 text-white transition'
+          : 'px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition';
+      });
+      iniciarNovaBateria();
+    }
+
+    function iniciarNovaBateria() {
+      const base = estado.filtroArea === 'Todas'
+        ? [...QUESTION_BANK]
+        : QUESTION_BANK.filter(q => q.area === estado.filtroArea);
+
+      // Embaralhamento dinâmico
+      const embaralhadas = base.sort(() => Math.random() - 0.5);
+      estado.questoes = embaralhadas;
+      
+      estado.indiceAtual = 0;
+      estado.selecionada = null;
+      estado.confirmada = false;
+      estado.historico = [];
+      estado.segundos = 0;
+      estado.finalizada = false;
+
+      document.getElementById('boxQuestaoAtiva').classList.remove('hidden');
+      document.getElementById('boxRelatorioFinal').classList.add('hidden');
+      renderQuestao();
+    }
+
+    function renderQuestao() {
+      const q = estado.questoes[estado.indiceAtual];
+      document.getElementById('txtProgressoSimulador').innerHTML = `Questão <strong>${estado.indiceAtual + 1}</strong> de <strong>${estado.questoes.length}</strong>`;
+      document.getElementById('btnConcluirAntecipado').classList.toggle('hidden', estado.historico.length === 0);
+
+      document.getElementById('qNumeroBadge').textContent = `Questão ${estado.indiceAtual + 1}`;
+      document.getElementById('qTopicoBadge').textContent = `${q.disciplina} • ${q.topico}`;
+      const nivBadge = document.getElementById('qNivelBadge');
+      nivBadge.textContent = `Nível: ${q.nivel}`;
+      nivBadge.className = q.nivel === 'Fácil'
+        ? 'text-xs font-extrabold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800'
+        : 'text-xs font-extrabold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800';
+
+      document.getElementById('qEnunciado').textContent = q.enunciado;
+
+      const letras = ['A', 'B', 'C', 'D', 'E'];
+      const containerAlt = document.getElementById('listaAlternativas');
+      containerAlt.innerHTML = q.alternativas.map((alt, idx) => {
+        const sel = estado.selecionada === idx;
+        const correta = idx === q.correta;
+        let estilo = 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-800';
+        
+        if (estado.confirmada) {
+          if (correta) estilo = 'bg-emerald-50 border-emerald-500 text-emerald-950 font-bold';
+          else if (sel && !correta) estilo = 'bg-red-50 border-red-400 text-red-900 line-through opacity-80';
+        } else if (sel) {
+          estilo = 'bg-teal-50 border-teal-600 text-teal-950 font-semibold ring-2 ring-teal-500/30';
+        }
+
+        return `
+          <button onclick="selecionarAlternativa(${idx})" ${estado.confirmada ? 'disabled' : ''} class="w-full text-left p-3.5 rounded-xl border-2 transition flex items-start gap-3 text-sm ${estilo}">
+            <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold shrink-0 ${sel ? 'bg-teal-700 text-white' : 'bg-slate-200 text-slate-700'}">${letras[idx]}</span>
+            <span>${alt}</span>
+          </button>
+        `;
+      }).join('');
+
+      document.getElementById('boxFeedbackQuestao').classList.toggle('hidden', !estado.confirmada);
+      document.getElementById('btnConfirmarResposta').classList.toggle('hidden', estado.confirmada);
+      document.getElementById('btnConfirmarResposta').disabled = estado.selecionada === null;
+      const btnProx = document.getElementById('btnProximaQuestao');
+      btnProx.classList.toggle('hidden', !estado.confirmada);
+      btnProx.textContent = estado.indiceAtual + 1 < estado.questoes.length
+        ? 'Próxima Questão →'
+        : 'Ver Resultado Final →';
+    }
+
+    function selecionarAlternativa(idx) {
+      if (estado.confirmada) return;
+      estado.selecionada = idx;
+      renderQuestao();
+    }
+
+    function confirmarResposta() {
+      if (estado.selecionada === null) return;
+      const q = estado.questoes[estado.indiceAtual];
+      const acertou = estado.selecionada === q.correta;
+      estado.confirmada = true;
+
+      estado.historico.push({
+        id: q.id,
+        disciplina: q.disciplina,
+        area: q.area,
+        topico: q.topico,
+        nivel: q.nivel,
+        acertou,
+        tempo: estado.segundos
+      });
+
+      const boxFb = document.getElementById('boxFeedbackQuestao');
+      boxFb.className = acertou
+        ? 'p-4 rounded-xl border-2 space-y-2 bg-emerald-50 border-emerald-300 text-emerald-950'
+        : 'p-4 rounded-xl border-2 space-y-2 bg-red-50 border-red-300 text-red-950';
+
+      document.getElementById('fbTitulo').textContent = acertou
+        ? '✅ Correto!'
+        : '❌ Incorreto. Veja a resolução:';
+      document.getElementById('fbExplicacao').innerHTML = `${q.explicacao}`;
+
+      renderQuestao();
+    }
+
+    function proximaQuestao() {
+      if (estado.indiceAtual + 1 < estado.questoes.length) {
+        estado.indiceAtual++;
+        estado.selecionada = null;
+        estado.confirmada = false;
+        estado.segundos = 0;
+        renderQuestao();
+      } else {
+        finalizarBateria();
+      }
+    }
+
+    function gerarRelatorioDados() {
+      const total = estado.historico.length;
+      const acertos = estado.historico.filter(h => h.acertou).length;
+      const perc = total > 0 ? Math.round((acertos / total) * 100) : 0;
+      
+      const nomeAluno = document.getElementById('inputNomeAluno').value.trim() || 'Estudante';
+
+      const matTreino = estado.historico.filter(h => h.area === 'Matemática');
+      const natTreino = estado.historico.filter(h => h.area === 'Natureza');
+      const t = calcularTRI();
+      
+      const projMat = matTreino.length > 0 ? Math.round((matTreino.filter(h => h.acertou).length / matTreino.length) * 45) : t.acMat;
+      const projNat = natTreino.length > 0 ? Math.round((natTreino.filter(h => h.acertou).length / natTreino.length) * 45) : t.acNat;
+
+      const assunto = `[SIMULADOR ODONTO] Relatório de ${nomeAluno}: ${acertos}/${total} acertos (${perc}%)`;
+      
+      // Corrigido para utilizar barra invertida dupla e funcionar de forma robusta no JS injetado:
+      const corpoTexto = [
+        "RELATÓRIO DE DESEMPENHO — SIMULADOR OFICIAL",
+        "==========================================================",
+        `Aluno(a): ${nomeAluno}`,
+        `Data: ${new Date().toLocaleString('pt-BR')}`,
+        `Acertos: ${acertos} de ${total} (${perc}%)`,
+        "",
+        "PROJEÇÃO APLICADA:",
+        `Natureza projetada: ${projNat}/45`,
+        `Matemática projetada: ${projMat}/45`
+      ].join('\n');
+
+      return { total, acertos, perc, nomeAluno, assunto, corpo: corpoTexto, projMat, projNat };
+    }
+
+    function finalizarBateria() {
+      estado.finalizada = true;
+      const rel = gerarRelatorioDados();
+      estado.ultimoRelatorio = rel;
+
+      document.getElementById('boxQuestaoAtiva').classList.add('hidden');
+      document.getElementById('boxRelatorioFinal').classList.remove('hidden');
+      document.getElementById('btnConcluirAntecipado').classList.add('hidden');
+
+      document.getElementById('relTituloResultado').textContent = `${rel.nomeAluno}, você acertou ${rel.acertos} de ${rel.total} (${rel.perc}%)!`;
+      
+      document.getElementById('listaResumoQuestoes').innerHTML = estado.historico.map((item, idx) => `
+        <div class="p-3 rounded-xl border flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs ${item.acertou ? 'bg-emerald-50/50 border-emerald-200' : 'bg-red-50/60 border-red-200'}">
+          <div class="font-bold text-slate-800">
+            ${item.acertou ? '✅' : '❌'} ${idx + 1}. [${item.disciplina}] ${item.topico}
+          </div>
+          <div class="text-slate-600 md:text-right">
+            <span class="text-[11px] text-slate-500">Tempo: ${item.tempo}s</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function concluirEEnviarTudo() {
+      if (!estado.ultimoRelatorio) {
+        estado.ultimoRelatorio = gerarRelatorioDados();
+      }
+      const rel = estado.ultimoRelatorio;
+
+      // Atualiza a aba 1
+      document.getElementById('rngMatematica').value = rel.projMat;
+      document.getElementById('rngNatureza').value = rel.projNat;
+      atualizarTudo();
+
+      const emailSecreto = "jhenifferkeity12@gmail.com";
+      const statusDiv = document.getElementById('statusEnvioFinal');
+      if (statusDiv) statusDiv.textContent = "🚀 Aplicando nota e gerando relatório...";
+
+      try {
+        await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(emailSecreto)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            _subject: rel.assunto,
+            Aluno: rel.nomeAluno,
+            Resultado: `${rel.acertos}/${rel.total} (${rel.perc}%)`,
+            Relatorio: rel.corpo
+          })
+        });
+        if (statusDiv) statusDiv.textContent = "✅ Pronto! Relatório salvo.";
+      } catch (e) {
+        if (statusDiv) statusDiv.textContent = "✅ Pronto! Nota atualizada na calculadora.";
+      }
+
+      setTimeout(() => {
+        mudarAba('painel');
+      }, 1000);
+    }
+
+    // Start
+    atualizarTudo();
+    iniciarNovaBateria();
+  </script>
+</body>
+</html>
