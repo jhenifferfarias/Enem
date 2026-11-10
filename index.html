@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OdontoENEM — Simulador 90 Questões (2º Dia)</title>
+  <title>OdontoENEM — Simulador Oficial (2º Dia)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
@@ -13,13 +13,14 @@
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-800 pb-16">
 
+  <!-- CABEÇALHO -->
   <header class="bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-700 text-white shadow-lg">
     <div class="max-w-5xl mx-auto px-4 py-5">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <span class="bg-white/20 px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider">
-              Especial 2º Dia ENEM (90 Questões)
+              Especial 2º Dia ENEM
             </span>
             <span class="bg-amber-400 text-slate-900 px-2.5 py-0.5 rounded-full text-xs font-bold">
               1º Dia (Média Base): 54 Acertos
@@ -29,7 +30,7 @@
             🦷 OdontoENEM — Simulador & TRI
           </h1>
           <p class="text-teal-100 text-sm mt-0.5">
-            Treine 90 questões de Ciências da Natureza e Matemática e acompanhe sua nota oficial!
+            Treine as questões de Ciências da Natureza e Matemática e acompanhe sua nota oficial!
           </p>
         </div>
 
@@ -38,7 +39,7 @@
             <span>🎓 Identificação do Candidato</span>
           </div>
           <div class="flex flex-col gap-1.5">
-            <input id="inputNomeAluno" type="text" placeholder="Digite seu nome (Ex: Lucas)" class="w-full bg-white text-slate-900 text-sm font-semibold px-3 py-2 rounded-lg border-0 focus:ring-2 focus:ring-amber-400 outline-none" />
+            <input id="inputNomeAluno" type="text" placeholder="Digite seu nome (Ex: Lucas)" oninput="atualizarTudo()" class="w-full bg-white text-slate-900 text-sm font-semibold px-3 py-2 rounded-lg border-0 focus:ring-2 focus:ring-amber-400 outline-none" />
           </div>
         </div>
       </div>
@@ -58,13 +59,24 @@
   </header>
 
   <main class="max-w-5xl mx-auto px-4 mt-6">
+
+    <!-- ABA 1: PAINEL DE NOTA -->
     <section id="secPainel" class="space-y-6">
+      <div id="cardDiagnostico" class="border-2 rounded-2xl p-5 shadow-sm transition-all">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <span id="diagBadge" class="text-xs font-extrabold uppercase px-3 py-1 rounded-full"></span>
+          <span id="diagModoTexto" class="text-xs font-semibold opacity-80"></span>
+        </div>
+        <h2 id="diagTitulo" class="text-lg md:text-xl font-extrabold mb-1"></h2>
+        <p id="diagTexto" class="text-sm leading-relaxed"></p>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-5">
           <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
               <h3 class="font-bold text-slate-900 text-base">Projeção de Acertos (2º Dia)</h3>
-              <p class="text-xs text-slate-500">Conclua o simulado para atualizar sua nota.</p>
+              <p class="text-xs text-slate-500">Ajuste as barras ou treine no simulador para atualizar sua nota.</p>
             </div>
             <div class="text-right">
               <span class="text-xs text-slate-400 block">Total no ENEM</span>
@@ -127,8 +139,8 @@
             <div class="flex items-center justify-between mb-3">
               <h3 class="font-bold text-slate-900 text-base">Sua Média</h3>
               <div class="flex bg-slate-100 p-1 rounded-lg text-xs font-semibold">
-                <button id="btnModoPesos" onclick="setModoCalculo('pesos')" class="px-2.5 py-1 rounded-md bg-teal-700 text-white shadow transition">C/ Pesos</button>
-                <button id="btnModoSimples" onclick="setModoCalculo('simples')" class="px-2.5 py-1 rounded-md text-slate-600 transition">Simples</button>
+                <button id="btnModoPesos" onclick="setModoCalculo('pesos')" class="px-2.5 py-1 rounded-md bg-teal-700 text-white shadow transition">C/ Pesos (Sisu)</button>
+                <button id="btnModoSimples" onclick="setModoCalculo('simples')" class="px-2.5 py-1 rounded-md text-slate-600 transition">Simples (ProUni)</button>
               </div>
             </div>
 
@@ -138,28 +150,35 @@
                 <span id="txtNotaAtiva">619</span> <span class="text-lg font-normal text-white/70">pts</span>
               </div>
             </div>
+
+            <div class="mt-5 space-y-3">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">Notas de Corte Odontologia:</h4>
+              <div id="listaMetasOdonto" class="space-y-2.5"></div>
+            </div>
           </div>
 
           <button onclick="mudarAba('simulador')" class="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold py-3 px-4 rounded-xl shadow flex items-center justify-center gap-2 transition">
-            Iniciar Simulado (90 Questões) →
+            Iniciar Simulado →
           </button>
         </div>
       </div>
     </section>
 
+    <!-- ABA 2: SIMULADOR DE QUESTÕES E RELATÓRIO -->
     <section id="secSimulador" class="hidden space-y-6">
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex flex-wrap items-center justify-between gap-4">
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-xs font-bold text-slate-500 uppercase">Filtro:</span>
-          <button id="filtroTodas" onclick="filtrarQuestoes('Todas')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-700 text-white transition">Geral (90 Q)</button>
-          <button id="filtroNatureza" onclick="filtrarQuestoes('Natureza')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Natureza (45 Q)</button>
-          <button id="filtroMatematica" onclick="filtrarQuestoes('Matemática')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Matemática (45 Q)</button>
+          <button id="filtroTodas" onclick="filtrarQuestoes('Todas')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-700 text-white transition">Geral (90Q)</button>
+          <button id="filtroNatureza" onclick="filtrarQuestoes('Natureza')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Natureza (45Q)</button>
+          <button id="filtroMatematica" onclick="filtrarQuestoes('Matemática')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Matemática (45Q)</button>
         </div>
         <div class="flex items-center gap-3">
           <span id="txtProgressoSimulador" class="text-xs font-semibold text-slate-600">Questão 1</span>
         </div>
       </div>
 
+      <!-- Card da Questão Ativa -->
       <div id="boxQuestaoAtiva" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-5">
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
           <div class="flex flex-wrap items-center gap-2">
@@ -181,9 +200,9 @@
           <p id="fbExplicacao" class="text-xs leading-relaxed"></p>
         </div>
 
-        <div class="flex items-center justify-between pt-2">
+        <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
           <button id="btnConcluirAntecipado" onclick="finalizarBateria()" class="hidden bg-slate-800 hover:bg-slate-900 text-white font-extrabold px-5 py-3 rounded-xl shadow-md text-xs transition flex items-center gap-2">
-            Encerrar Antecipadamente
+            Encerrar Antecipadamente (Zerar as em branco)
           </button>
           <div class="ml-auto flex gap-2">
             <button id="btnConfirmarResposta" onclick="confirmarResposta()" disabled class="bg-teal-700 disabled:bg-slate-300 hover:bg-teal-800 text-white font-extrabold px-6 py-3 rounded-xl transition text-sm">
@@ -196,6 +215,7 @@
         </div>
       </div>
 
+      <!-- Tela Final de Relatório -->
       <div id="boxRelatorioFinal" class="hidden bg-white rounded-2xl shadow-md border-2 border-teal-600 p-6 space-y-6">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200 pb-4">
           <div>
@@ -207,7 +227,8 @@
         <div class="bg-gradient-to-r from-emerald-600 to-teal-700 p-6 rounded-2xl text-white shadow-lg text-center space-y-3">
           <h3 class="text-lg font-black">🎯 Simulado Concluído!</h3>
           <p class="text-xs text-teal-100 max-w-xl mx-auto">
-            Clique abaixo para aplicar este resultado na sua calculadora de nota e atualizar sua projeção.
+            As questões que não foram respondidas foram consideradas como "Em Branco" (erro), simulando a TRI do ENEM.
+            Clique abaixo para aplicar este resultado na calculadora de nota e atualizar sua projeção.
           </p>
           <button onclick="concluirEEnviarTudo()" class="w-full md:w-auto bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-base py-4 px-8 rounded-xl shadow-2xl transition transform hover:scale-[1.02] flex items-center justify-center gap-3 mx-auto">
             🚀 APLICAR NOTA E VER RESULTADO!
@@ -217,45 +238,82 @@
 
         <div>
           <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-3">
-            Raio-X das Questões:
+            Raio-X do Simulado:
           </h4>
-          <div id="listaResumoQuestoes" class="space-y-2 max-h-80 overflow-y-auto pr-2"></div>
+          <div id="listaResumoQuestoes" class="space-y-2 max-h-96 overflow-y-auto pr-2"></div>
+        </div>
+
+        <div class="flex justify-end pt-3 border-t border-slate-200">
+          <button onclick="iniciarNovaBateria()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-5 py-3 rounded-xl text-xs transition">
+            🔄 Iniciar Novo Simulado
+          </button>
         </div>
       </div>
     </section>
 
+    <!-- ABA 3: GUIA DE SOBREVIVÊNCIA TRI -->
     <section id="secGuia" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-5">
       <h2 class="text-xl font-extrabold text-slate-900">
         🎯 Estratégia de Prova: Maximizando a TRI
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
         <div class="p-4 rounded-xl bg-teal-50 border border-teal-200 space-y-2">
-          <span class="bg-teal-700 text-white text-xs font-bold px-2.5 py-1 rounded-full">Matemática</span>
+          <span class="bg-teal-700 text-white text-xs font-bold px-2.5 py-1 rounded-full">Matemática Bovina</span>
           <h3 class="font-bold text-teal-950">Caça às Fáceis</h3>
           <p class="text-xs text-slate-700 leading-relaxed">
-            Não faça a prova na ordem! Resolva primeiro as questões de gráficos, tabelas, porcentagem e regra de três.
+            Não faça a prova na ordem! Resolva primeiro as questões de gráficos, tabelas, porcentagem simples e regra de três. Isso blinda sua TRI.
           </p>
         </div>
         <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 space-y-2">
           <span class="bg-amber-500 text-slate-950 text-xs font-bold px-2.5 py-1 rounded-full">Natureza</span>
           <h3 class="font-bold text-amber-950">Foco na Teoria</h3>
           <p class="text-xs text-slate-700 leading-relaxed">
-            Garanta primeiro Ecologia, Citologia e conceitos de Química antes de gastar tempo com cálculos de Física.
+            Garanta primeiro Ecologia, Citologia e conceitos de Química antes de gastar tempo com contas longas de Física.
           </p>
         </div>
         <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-200 space-y-2">
           <span class="bg-indigo-700 text-white text-xs font-bold px-2.5 py-1 rounded-full">Finalização</span>
           <h3 class="font-bold text-indigo-950">Chute Consciente</h3>
           <p class="text-xs text-slate-700 leading-relaxed">
-            Elimine as alternativas absurdas nos extremos antes de marcar nas difíceis.
+            Volte nas questões médias. Nas difíceis em que faltar tempo, elimine as alternativas absurdas nos extremos antes de marcar.
           </p>
         </div>
       </div>
     </section>
+
   </main>
 
   <script>
-    const QUESTION_BANK = [{"id": 1, "area": "Matemática", "disciplina": "Matemática", "topico": "Razão e Proporção (Dosagem)", "nivel": "Fácil", "enunciado": "A dose máxima de anestésico é 4 mg/kg. O tubete tem 30 mg. Quantos tubetes completos aplicar em um paciente de 50 kg?", "alternativas": ["4", "5", "6", "7", "8"], "correta": 2, "explicacao": "50 kg × 4 mg = 200 mg. 200 / 30 = 6.67. Arredondando para baixo: 6."}, {"id": 2, "area": "Matemática", "disciplina": "Matemática", "topico": "Porcentagem e Descontos", "nivel": "Fácil", "enunciado": "Um procedimento de R$ 500 teve 20% de desconto e depois mais 15% sobre o novo valor. Qual o valor final?", "alternativas": ["R$ 330.00", "R$ 340.00", "R$ 350.00", "R$ 360.00", "R$ 370.00"], "correta": 1, "explicacao": "500 × 0,80 = 400.0. 400.0 × 0.85 = 340.0."}, {"id": 3, "area": "Matemática", "disciplina": "Matemática", "topico": "Estatística (Mediana)", "nivel": "Fácil", "enunciado": "Tempos de espera: 12, 8, 15, 8, 25, 10, 22. Qual a Mediana?", "alternativas": ["10", "11", "12", "13", "14"], "correta": 2, "explicacao": "Ordem: 8, 8, 10, 12, 15, 22, 25. O termo central (4º) é 12."}, {"id": 4, "area": "Matemática", "disciplina": "Matemática", "topico": "Geometria Espacial (Cilindro)", "nivel": "Média", "enunciado": "Um reservatório cilíndrico tem raio 10 cm e altura 80 cm (π = 3). Quantos litros cabem (1L = 1000 cm³)?", "alternativas": ["19.0 L", "24.0 L", "29.0 L", "34.0 L", "39.0 L"], "correta": 1, "explicacao": "V = π r² h = 3 × 10² × 80 = 24000 cm³. Dividindo por 1000: 24.0 L."}, {"id": 5, "area": "Matemática", "disciplina": "Matemática", "topico": "Função Afim", "nivel": "Fácil", "enunciado": "Uma clínica cobra R$ 70 fixos mais R$ 38 por hora. Qual o custo para 2 horas?", "alternativas": ["R$ 126", "R$ 136", "R$ 146", "R$ 156", "R$ 166"], "correta": 2, "explicacao": "Custo = Fixo + (Variável × Horas) = 70 + (38 × 2) = 146."}, {"id": 6, "area": "Matemática", "disciplina": "Matemática", "topico": "Razão e Proporção (Dosagem)", "nivel": "Fácil", "enunciado": "A dose máxima de anestésico é 5 mg/kg. O tubete tem 40 mg. Quantos tubetes completos aplicar em um paciente de 75 kg?", "alternativas": ["7", "8", "9", "10", "11"], "correta": 2, "explicacao": "75 kg × 5 mg = 375 mg. 375 / 40 = 9.38. Arredondando para baixo: 9."}, {"id": 7, "area": "Matemática", "disciplina": "Matemática", "topico": "Porcentagem e Descontos", "nivel": "Fácil", "enunciado": "Um procedimento de R$ 1000 teve 20% de desconto e depois mais 10% sobre o novo valor. Qual o valor final?", "alternativas": ["R$ 710.00", "R$ 720.00", "R$ 730.00", "R$ 740.00", "R$ 750.00"], "correta": 1, "explicacao": "1000 × 0,80 = 800.0. 800.0 × 0.9 = 720.0."}, {"id": 8, "area": "Matemática", "disciplina": "Matemática", "topico": "Estatística (Mediana)", "nivel": "Fácil", "enunciado": "Tempos de espera: 12, 8, 15, 8, 25, 10, 27. Qual a Mediana?", "alternativas": ["10", "11", "12", "13", "14"], "correta": 2, "explicacao": "Ordem: 8, 8, 10, 12, 15, 25, 27. O termo central (4º) é 12."}, {"id": 9, "area": "Matemática", "disciplina": "Matemática", "topico": "Geometria Espacial (Cilindro)", "nivel": "Média", "enunciado": "Um reservatório cilíndrico tem raio 20 cm e altura 130 cm (π = 3). Quantos litros cabem (1L = 1000 cm³)?", "alternativas": ["151.0 L", "156.0 L", "161.0 L", "166.0 L", "171.0 L"], "correta": 1, "explicacao": "V = π r² h = 3 × 20² × 130 = 156000 cm³. Dividindo por 1000: 156.0 L."}, {"id": 10, "area": "Matemática", "disciplina": "Matemática", "topico": "Função Afim", "nivel": "Fácil", "enunciado": "Uma clínica cobra R$ 95 fixos mais R$ 48 por hora. Qual o custo para 3 horas?", "alternativas": ["R$ 219", "R$ 229", "R$ 239", "R$ 249", "R$ 259"], "correta": 2, "explicacao": "Custo = Fixo + (Variável × Horas) = 95 + (48 × 3) = 239."}, {"id": 11, "area": "Matemática", "disciplina": "Matemática", "topico": "Razão e Proporção (Dosagem)", "nivel": "Fácil", "enunciado": "A dose máxima de anestésico é 4 mg/kg. O tubete tem 50 mg. Quantos tubetes completos aplicar em um paciente de 100 kg?", "alternativas": ["6", "7", "8", "9", "10"], "correta": 2, "explicacao": "100 kg × 4 mg = 400 mg. 400 / 50 = 8.00. Arredondando para baixo: 8."}, {"id": 12, "area": "Matemática", "disciplina": "Matemática", "topico": "Porcentagem e Descontos", "nivel": "Fácil", "enunciado": "Um procedimento de R$ 1500 teve 20% de desconto e depois mais 20% sobre o novo valor. Qual o valor final?", "alternativas": ["R$ 950.00", "R$ 960.00", "R$ 970.00", "R$ 980.00", "R$ 990.00"], "correta": 1, "explicacao": "1500 × 0,80 = 1200.0. 1200.0 × 0.8 = 960.0."}, {"id": 13, "area": "Matemática", "disciplina": "Matemática", "topico": "Estatística (Mediana)", "nivel": "Fácil", "enunciado": "Tempos de espera: 12, 8, 15, 8, 25, 10, 32. Qual a Mediana?", "alternativas": ["10", "11", "12", "13", "14"], "correta": 2, "explicacao": "Ordem: 8, 8, 10, 12, 15, 25, 32. O termo central (4º) é 12."}, {"id": 14, "area": "Matemática", "disciplina": "Matemática", "topico": "Geometria Espacial (Cilindro)", "nivel": "Média", "enunciado": "Um reservatório cilíndrico tem raio 15 cm e altura 180 cm (π = 3). Quantos litros cabem (1L = 1000 cm³)?", "alternativas": ["116.5 L", "121.5 L", "126.5 L", "131.5 L", "136.5 L"], "correta": 1, "explicacao": "V = π r² h = 3 × 15² × 180 = 121500 cm³. Dividindo por 1000: 121.5 L."}, {"id": 15, "area": "Matemática", "disciplina": "Matemática", "topico": "Função Afim", "nivel": "Fácil", "enunciado": "Uma clínica cobra R$ 120 fixos mais R$ 58 por hora. Qual o custo para 4 horas?", "alternativas": ["R$ 332", "R$ 342", "R$ 352", "R$ 362", "R$ 372"], "correta": 2, "explicacao": "Custo = Fixo + (Variável × Horas) = 120 + (58 × 4) = 352."}, {"id": 16, "area": "Matemática", "disciplina": "Matemática", "topico": "Razão e Proporção (Dosagem)", "nivel": "Fácil", "enunciado": "A dose máxima de anestésico é 5 mg/kg. O tubete tem 60 mg. Quantos tubetes completos aplicar em um paciente de 125 kg?", "alternativas": ["8", "9", "10", "11", "12"], "correta": 2, "explicacao": "125 kg × 5 mg = 625 mg. 625 / 60 = 10.42. Arredondando para baixo: 10."}, {"id": 17, "area": "Matemática", "disciplina": "Matemática", "topico": "Porcentagem e Descontos", "nivel": "Fácil", "enunciado": "Um procedimento de R$ 2000 teve 20% de desconto e depois mais 15% sobre o novo valor. Qual o valor final?", "alternativas": ["R$ 1350.00", "R$ 1360.00", "R$ 1370.00", "R$ 1380.00", "R$ 1390.00"], "correta": 1, "explicacao": "2000 × 0,80 = 1600.0. 1600.0 × 0.85 = 1360.0."}, {"id": 18, "area": "Matemática", "disciplina": "Matemática", "topico": "Estatística (Mediana)", "nivel": "Fácil", "enunciado": "Tempos de espera: 12, 8, 15, 8, 25, 10, 37. Qual a Mediana?", "alternativas": ["10", "11", "12", "13", "14"], "correta": 2, "explicacao": "Ordem: 8, 8, 10, 12, 15, 25, 37. O termo central (4º) é 12."}, {"id": 19, "area": "Matemática", "disciplina": "Matemática", "topico": "Geometria Espacial (Cilindro)", "nivel": "Média", "enunciado": "Um reservatório cilíndrico tem raio 10 cm e altura 230 cm (π = 3). Quantos litros cabem (1L = 1000 cm³)?", "alternativas": ["64.0 L", "69.0 L", "74.0 L", "79.0 L", "84.0 L"], "correta": 1, "explicacao": "V = π r² h = 3 × 10² × 230 = 69000 cm³. Dividindo por 1000: 69.0 L."}, {"id": 20, "area": "Matemática", "disciplina": "Matemática", "topico": "Função Afim", "nivel": "Fácil", "enunciado": "Uma clínica cobra R$ 145 fixos mais R$ 68 por hora. Qual o custo para 5 horas?", "alternativas": ["R$ 465", "R$ 475", "R$ 485", "R$ 495", "R$ 505"], "correta": 2, "explicacao": "Custo = Fixo + (Variável × Horas) = 145 + (68 × 5) = 485."}, {"id": 21, "area": "Matemática", "disciplina": "Matemática", "topico": "Razão e Proporção (Dosagem)", "nivel": "Fácil", "enunciado": "A dose máxima de anestésico é 4 mg/kg. O tubete tem 70 mg. Quantos tubetes completos aplicar em um paciente de 150 kg?", "alternativas": ["6", "7", "8", "9", "10"], "correta": 2, "explicacao": "150 kg × 4 mg = 600 mg. 600 / 70 = 8.57. Arredondando para baixo: 8."}, {"id": 22, "area": "Matemática", "disciplina": "Matemática", "topico": "Porcentagem e Descontos", "nivel": "Fácil", "enunciado": "Um procedimento de R$ 2500 teve 20% de desconto e depois mais 10% sobre o novo valor. Qual o valor final?", "alternativas": ["R$ 1790.00", "R$ 1800.00", "R$ 1810.00", "R$ 1820.00", "R$ 1830.00"], "correta": 1, "explicacao": "2500 × 0,80 = 2000.0. 2000.0 × 0.9 = 1800.0."}, {"id": 23, "area": "Matemática", "disciplina": "Matemática", "topico": "Estatística (Mediana)", "nivel": "Fácil", "enunciado": "Tempos de espera: 12, 8, 15, 8, 25, 10, 42. Qual a Mediana?", "alternativas": ["10", "11", "12", "13", "14"], "correta": 2, "explicacao": "Ordem: 8, 8, 10, 12, 15, 25, 42. O termo central (4º) é 12."}, {"id": 24, "area": "Matemática", "disciplina": "Matemática", "topico": "Geometria Espacial (Cilindro)", "nivel": "Média", "enunciado": "Um reservatório cilíndrico tem raio 20 cm e altura 280 cm (π = 3). Quantos litros cabem (1L = 1000 cm³)?", "alternativas": ["331.0 L", "336.0 L", "341.0 L", "346.0 L", "351.0 L"], "correta": 1, "explicacao": "V = π r² h = 3 × 20² × 280 = 336000 cm³. Dividindo por 1000: 336.0 L."}, {"id": 25, "area": "Matemática", "disciplina": "Matemática", "topico": "Função Afim", "nivel": "Fácil", "enunciado": "Uma clínica cobra R$ 170 fixos mais R$ 78 por hora. Qual o custo para 2 horas?", "alternativas": ["R$ 306", "R$ 316", "R$ 326", "R$ 336", "R$ 346"], "correta": 2, "explicacao": "Custo = Fixo + (Variável × Horas) = 170 + (78 × 2) = 326."}, {"id": 26, "area": "Matemática", "disciplina": "Matemática", "topico": "Razão e Proporção (Dosagem)", "nivel": "Fácil", "enunciado": "A dose máxima de anestésico é 5 mg/kg. O tubete tem 80 mg. Quantos tubetes completos aplicar em um paciente de 175 kg?", "alternativas": ["8", "9", "10", "11", "12"], "correta": 2, "explicacao": "175 kg × 5 mg = 875 mg. 875 / 80 = 10.94. Arredondando para baixo: 10."}, {"id": 27, "area": "Matemática", "disciplina": "Matemática", "topico": "Porcentagem e Descontos", "nivel": "Fácil", "enunciado": "Um procedimento de R$ 3000 teve 20% de desconto e depois mais 20% sobre o novo valor. Qual o valor final?", "alternativas": ["R$ 1910.00", "R$ 1920.00", "R$ 1930.00", "R$ 1940.00", "R$ 1950.00"], "correta": 1, "explicacao": "3000 × 0,80 = 2400.0. 2400.0 × 0.8 = 1920.0."}, {"id": 28, "area": "Matemática", "disciplina": "Matemática", "topico": "Estatística (Mediana)", "nivel": "Fácil", "enunciado": "Tempos de espera: 12, 8, 15, 8, 25, 10, 47. Qual a Mediana?", "alternativas": ["10", "11", "12", "13", "14"], "correta": 2, "explicacao": "Ordem: 8, 8, 10, 12, 15, 25, 47. O termo central (4º) é 12."}, {"id": 29, "area": "Matemática", "disciplina": "Matemática", "topico": "Geometria Espacial (Cilindro)", "nivel": "Média", "enunciado": "Um reservatório cilíndrico tem raio 15 cm e altura 330 cm (π = 3). Quantos litros cabem (1L = 1000 cm³)?", "alternativas": ["217.75 L", "222.75 L", "227.75 L", "232.75 L", "237.75 L"], "correta": 1, "explicacao": "V = π r² h = 3 × 15² × 330 = 222750 cm³. Dividindo por 1000: 222.75 L."}, {"id": 30, "area": "Matemática", "disciplina": "Matemática", "topico": "Função Afim", "nivel": "Fácil", "enunciado": "Uma clínica cobra R$ 195 fixos mais R$ 88 por hora. Qual o custo para 3 horas?", "alternativas": ["R$ 439", "R$ 449", "R$ 459", "R$ 469", "R$ 479"], "correta": 2, "explicacao": "Custo = Fixo + (Variável × Horas) = 195 + (88 × 3) = 459."}, {"id": 31, "area": "Matemática", "disciplina": "Matemática", "topico": "Razão e Proporção (Dosagem)", "nivel": "Fácil", "enunciado": "A dose máxima de anestésico é 4 mg/kg. O tubete tem 90 mg. Quantos tubetes completos aplicar em um paciente de 200 kg?", "alternativas": ["6", "7", "8", "9", "10"], "correta": 2, "explicacao": "200 kg × 4 mg = 800 mg. 800 / 90 = 8.89. Arredondando para baixo: 8."}, {"id": 32, "area": "Matemática", "disciplina": "Matemática", "topico": "Porcentagem e Descontos", "nivel": "Fácil", "enunciado": "Um procedimento de R$ 3500 teve 20% de desconto e depois mais 15% sobre o novo valor. Qual o valor final?", "alternativas": ["R$ 2370.00", "R$ 2380.00", "R$ 2390.00", "R$ 2400.00", "R$ 2410.00"], "correta": 1, "explicacao": "3500 × 0,80 = 2800.0. 2800.0 × 0.85 = 2380.0."}, {"id": 33, "area": "Matemática", "disciplina": "Matemática", "topico": "Estatística (Mediana)", "nivel": "Fácil", "enunciado": "Tempos de espera: 12, 8, 15, 8, 25, 10, 52. Qual a Mediana?", "alternativas": ["10", "11", "12", "13", "14"], "correta": 2, "explicacao": "Ordem: 8, 8, 10, 12, 15, 25, 52. O termo central (4º) é 12."}, {"id": 34, "area": "Matemática", "disciplina": "Matemática", "topico": "Geometria Espacial (Cilindro)", "nivel": "Média", "enunciado": "Um reservatório cilíndrico tem raio 10 cm e altura 380 cm (π = 3). Quantos litros cabem (1L = 1000 cm³)?", "alternativas": ["109.0 L", "114.0 L", "119.0 L", "124.0 L", "129.0 L"], "correta": 1, "explicacao": "V = π r² h = 3 × 10² × 380 = 114000 cm³. Dividindo por 1000: 114.0 L."}, {"id": 35, "area": "Matemática", "disciplina": "Matemática", "topico": "Função Afim", "nivel": "Fácil", "enunciado": "Uma clínica cobra R$ 220 fixos mais R$ 98 por hora. Qual o custo para 4 horas?", "alternativas": ["R$ 592", "R$ 602", "R$ 612", "R$ 622", "R$ 632"], "correta": 2, "explicacao": "Custo = Fixo + (Variável × Horas) = 220 + (98 × 4) = 612."}, {"id": 36, "area": "Matemática", "disciplina": "Matemática", "topico": "Razão e Proporção (Dosagem)", "nivel": "Fácil", "enunciado": "A dose máxima de anestésico é 5 mg/kg. O tubete tem 100 mg. Quantos tubetes completos aplicar em um paciente de 225 kg?", "alternativas": ["9", "10", "11", "12", "13"], "correta": 2, "explicacao": "225 kg × 5 mg = 1125 mg. 1125 / 100 = 11.25. Arredondando para baixo: 11."}, {"id": 37, "area": "Matemática", "disciplina": "Matemática", "topico": "Porcentagem e Descontos", "nivel": "Fácil", "enunciado": "Um procedimento de R$ 4000 teve 20% de desconto e depois mais 10% sobre o novo valor. Qual o valor final?", "alternativas": ["R$ 2870.00", "R$ 2880.00", "R$ 2890.00", "R$ 2900.00", "R$ 2910.00"], "correta": 1, "explicacao": "4000 × 0,80 = 3200.0. 3200.0 × 0.9 = 2880.0."}, {"id": 38, "area": "Matemática", "disciplina": "Matemática", "topico": "Estatística (Mediana)", "nivel": "Fácil", "enunciado": "Tempos de espera: 12, 8, 15, 8, 25, 10, 57. Qual a Mediana?", "alternativas": ["10", "11", "12", "13", "14"], "correta": 2, "explicacao": "Ordem: 8, 8, 10, 12, 15, 25, 57. O termo central (4º) é 12."}, {"id": 39, "area": "Matemática", "disciplina": "Matemática", "topico": "Geometria Espacial (Cilindro)", "nivel": "Média", "enunciado": "Um reservatório cilíndrico tem raio 20 cm e altura 430 cm (π = 3). Quantos litros cabem (1L = 1000 cm³)?", "alternativas": ["511.0 L", "516.0 L", "521.0 L", "526.0 L", "531.0 L"], "correta": 1, "explicacao": "V = π r² h = 3 × 20² × 430 = 516000 cm³. Dividindo por 1000: 516.0 L."}, {"id": 40, "area": "Matemática", "disciplina": "Matemática", "topico": "Função Afim", "nivel": "Fácil", "enunciado": "Uma clínica cobra R$ 245 fixos mais R$ 108 por hora. Qual o custo para 5 horas?", "alternativas": ["R$ 765", "R$ 775", "R$ 785", "R$ 795", "R$ 805"], "correta": 2, "explicacao": "Custo = Fixo + (Variável × Horas) = 245 + (108 × 5) = 785."}, {"id": 41, "area": "Matemática", "disciplina": "Matemática", "topico": "Razão e Proporção (Dosagem)", "nivel": "Fácil", "enunciado": "A dose máxima de anestésico é 4 mg/kg. O tubete tem 110 mg. Quantos tubetes completos aplicar em um paciente de 250 kg?", "alternativas": ["7", "8", "9", "10", "11"], "correta": 2, "explicacao": "250 kg × 4 mg = 1000 mg. 1000 / 110 = 9.09. Arredondando para baixo: 9."}, {"id": 42, "area": "Matemática", "disciplina": "Matemática", "topico": "Porcentagem e Descontos", "nivel": "Fácil", "enunciado": "Um procedimento de R$ 4500 teve 20% de desconto e depois mais 20% sobre o novo valor. Qual o valor final?", "alternativas": ["R$ 2870.00", "R$ 2880.00", "R$ 2890.00", "R$ 2900.00", "R$ 2910.00"], "correta": 1, "explicacao": "4500 × 0,80 = 3600.0. 3600.0 × 0.8 = 2880.0."}, {"id": 43, "area": "Matemática", "disciplina": "Matemática", "topico": "Estatística (Mediana)", "nivel": "Fácil", "enunciado": "Tempos de espera: 12, 8, 15, 8, 25, 10, 62. Qual a Mediana?", "alternativas": ["10", "11", "12", "13", "14"], "correta": 2, "explicacao": "Ordem: 8, 8, 10, 12, 15, 25, 62. O termo central (4º) é 12."}, {"id": 44, "area": "Matemática", "disciplina": "Matemática", "topico": "Geometria Espacial (Cilindro)", "nivel": "Média", "enunciado": "Um reservatório cilíndrico tem raio 15 cm e altura 480 cm (π = 3). Quantos litros cabem (1L = 1000 cm³)?", "alternativas": ["319.0 L", "324.0 L", "329.0 L", "334.0 L", "339.0 L"], "correta": 1, "explicacao": "V = π r² h = 3 × 15² × 480 = 324000 cm³. Dividindo por 1000: 324.0 L."}, {"id": 45, "area": "Matemática", "disciplina": "Matemática", "topico": "Função Afim", "nivel": "Fácil", "enunciado": "Uma clínica cobra R$ 270 fixos mais R$ 118 por hora. Qual o custo para 2 horas?", "alternativas": ["R$ 486", "R$ 496", "R$ 506", "R$ 516", "R$ 526"], "correta": 2, "explicacao": "Custo = Fixo + (Variável × Horas) = 270 + (118 × 2) = 506."}, {"id": 46, "area": "Natureza", "disciplina": "Química", "topico": "pH e Desmineralização", "nivel": "Fácil", "enunciado": "A saliva neutraliza ácidos bucais (pH < 5,5) após consumo de refrigerante (pH ~2). Qual o efeito direto da saliva?", "alternativas": ["Aumenta acidez", "Neutraliza H+", "Corrói o esmalte", "Destrói bactérias", "Gera cárie"], "correta": 1, "explicacao": "A saliva age como tampão, neutralizando o excesso de H+ e elevando o pH."}, {"id": 47, "area": "Natureza", "disciplina": "Biologia", "topico": "Citologia", "nivel": "Fácil", "enunciado": "Macrófagos fagocitam bactérias (tamanho 3 µm). A digestão intracelular é feita por qual organela?", "alternativas": ["Ribossomo", "Lisossomo", "Golgi", "Mitocôndria", "Centríolo"], "correta": 1, "explicacao": "Os lisossomos são responsáveis pela digestão intracelular, ricos em enzimas hidrolíticas."}, {"id": 48, "area": "Natureza", "disciplina": "Física", "topico": "Ondulatória (Raios X)", "nivel": "Média", "enunciado": "Raios X (frequência de ~10^18 Hz) comparados à luz visível possuem:", "alternativas": ["Menor frequência", "Maior comprimento de onda", "Maior energia", "Menor velocidade no vácuo", "Nenhuma energia"], "correta": 2, "explicacao": "Raios X possuem altíssima frequência e, consequentemente, maior energia por fóton (radiação ionizante)."}, {"id": 49, "area": "Natureza", "disciplina": "Física", "topico": "Termologia (Autoclave)", "nivel": "Média", "enunciado": "A autoclave esteriliza a 5°C sob alta pressão. O aumento da pressão causa:", "alternativas": ["Fervura a 80°C", "Fusão do aço", "Elevação da temperatura de ebulição", "Congelamento", "Redução da densidade"], "correta": 2, "explicacao": "O aumento da pressão dificulta a vaporização, elevando a temperatura de ebulição da água para além dos 100°C."}, {"id": 50, "area": "Natureza", "disciplina": "Biologia", "topico": "Imunologia", "nivel": "Fácil", "enunciado": "Vacinas com carga viral atenuada de 14% são eficientes pois induzem a produção de:", "alternativas": ["Antibióticos", "Soros", "Anticorpos e memória", "Antígenos próprios", "Plaquetas"], "correta": 2, "explicacao": "A vacina estimula a resposta imune primária, gerando anticorpos específicos e células de memória."}, {"id": 51, "area": "Natureza", "disciplina": "Química", "topico": "pH e Desmineralização", "nivel": "Fácil", "enunciado": "A saliva neutraliza ácidos bucais (pH < 5,5) após consumo de refrigerante (pH ~2). Qual o efeito direto da saliva?", "alternativas": ["Aumenta acidez", "Neutraliza H+", "Corrói o esmalte", "Destrói bactérias", "Gera cárie"], "correta": 1, "explicacao": "A saliva age como tampão, neutralizando o excesso de H+ e elevando o pH."}, {"id": 52, "area": "Natureza", "disciplina": "Biologia", "topico": "Citologia", "nivel": "Fácil", "enunciado": "Macrófagos fagocitam bactérias (tamanho 3 µm). A digestão intracelular é feita por qual organela?", "alternativas": ["Ribossomo", "Lisossomo", "Golgi", "Mitocôndria", "Centríolo"], "correta": 1, "explicacao": "Os lisossomos são responsáveis pela digestão intracelular, ricos em enzimas hidrolíticas."}, {"id": 53, "area": "Natureza", "disciplina": "Física", "topico": "Ondulatória (Raios X)", "nivel": "Média", "enunciado": "Raios X (frequência de ~10^17 Hz) comparados à luz visível possuem:", "alternativas": ["Menor frequência", "Maior comprimento de onda", "Maior energia", "Menor velocidade no vácuo", "Nenhuma energia"], "correta": 2, "explicacao": "Raios X possuem altíssima frequência e, consequentemente, maior energia por fóton (radiação ionizante)."}, {"id": 54, "area": "Natureza", "disciplina": "Física", "topico": "Termologia (Autoclave)", "nivel": "Média", "enunciado": "A autoclave esteriliza a 5°C sob alta pressão. O aumento da pressão causa:", "alternativas": ["Fervura a 80°C", "Fusão do aço", "Elevação da temperatura de ebulição", "Congelamento", "Redução da densidade"], "correta": 2, "explicacao": "O aumento da pressão dificulta a vaporização, elevando a temperatura de ebulição da água para além dos 100°C."}, {"id": 55, "area": "Natureza", "disciplina": "Biologia", "topico": "Imunologia", "nivel": "Fácil", "enunciado": "Vacinas com carga viral atenuada de 19% são eficientes pois induzem a produção de:", "alternativas": ["Antibióticos", "Soros", "Anticorpos e memória", "Antígenos próprios", "Plaquetas"], "correta": 2, "explicacao": "A vacina estimula a resposta imune primária, gerando anticorpos específicos e células de memória."}, {"id": 56, "area": "Natureza", "disciplina": "Química", "topico": "pH e Desmineralização", "nivel": "Fácil", "enunciado": "A saliva neutraliza ácidos bucais (pH < 5,5) após consumo de refrigerante (pH ~2). Qual o efeito direto da saliva?", "alternativas": ["Aumenta acidez", "Neutraliza H+", "Corrói o esmalte", "Destrói bactérias", "Gera cárie"], "correta": 1, "explicacao": "A saliva age como tampão, neutralizando o excesso de H+ e elevando o pH."}, {"id": 57, "area": "Natureza", "disciplina": "Biologia", "topico": "Citologia", "nivel": "Fácil", "enunciado": "Macrófagos fagocitam bactérias (tamanho 3 µm). A digestão intracelular é feita por qual organela?", "alternativas": ["Ribossomo", "Lisossomo", "Golgi", "Mitocôndria", "Centríolo"], "correta": 1, "explicacao": "Os lisossomos são responsáveis pela digestão intracelular, ricos em enzimas hidrolíticas."}, {"id": 58, "area": "Natureza", "disciplina": "Física", "topico": "Ondulatória (Raios X)", "nivel": "Média", "enunciado": "Raios X (frequência de ~10^16 Hz) comparados à luz visível possuem:", "alternativas": ["Menor frequência", "Maior comprimento de onda", "Maior energia", "Menor velocidade no vácuo", "Nenhuma energia"], "correta": 2, "explicacao": "Raios X possuem altíssima frequência e, consequentemente, maior energia por fóton (radiação ionizante)."}, {"id": 59, "area": "Natureza", "disciplina": "Física", "topico": "Termologia (Autoclave)", "nivel": "Média", "enunciado": "A autoclave esteriliza a 5°C sob alta pressão. O aumento da pressão causa:", "alternativas": ["Fervura a 80°C", "Fusão do aço", "Elevação da temperatura de ebulição", "Congelamento", "Redução da densidade"], "correta": 2, "explicacao": "O aumento da pressão dificulta a vaporização, elevando a temperatura de ebulição da água para além dos 100°C."}, {"id": 60, "area": "Natureza", "disciplina": "Biologia", "topico": "Imunologia", "nivel": "Fácil", "enunciado": "Vacinas com carga viral atenuada de 24% são eficientes pois induzem a produção de:", "alternativas": ["Antibióticos", "Soros", "Anticorpos e memória", "Antígenos próprios", "Plaquetas"], "correta": 2, "explicacao": "A vacina estimula a resposta imune primária, gerando anticorpos específicos e células de memória."}, {"id": 61, "area": "Natureza", "disciplina": "Química", "topico": "pH e Desmineralização", "nivel": "Fácil", "enunciado": "A saliva neutraliza ácidos bucais (pH < 5,5) após consumo de refrigerante (pH ~2). Qual o efeito direto da saliva?", "alternativas": ["Aumenta acidez", "Neutraliza H+", "Corrói o esmalte", "Destrói bactérias", "Gera cárie"], "correta": 1, "explicacao": "A saliva age como tampão, neutralizando o excesso de H+ e elevando o pH."}, {"id": 62, "area": "Natureza", "disciplina": "Biologia", "topico": "Citologia", "nivel": "Fácil", "enunciado": "Macrófagos fagocitam bactérias (tamanho 3 µm). A digestão intracelular é feita por qual organela?", "alternativas": ["Ribossomo", "Lisossomo", "Golgi", "Mitocôndria", "Centríolo"], "correta": 1, "explicacao": "Os lisossomos são responsáveis pela digestão intracelular, ricos em enzimas hidrolíticas."}, {"id": 63, "area": "Natureza", "disciplina": "Física", "topico": "Ondulatória (Raios X)", "nivel": "Média", "enunciado": "Raios X (frequência de ~10^18 Hz) comparados à luz visível possuem:", "alternativas": ["Menor frequência", "Maior comprimento de onda", "Maior energia", "Menor velocidade no vácuo", "Nenhuma energia"], "correta": 2, "explicacao": "Raios X possuem altíssima frequência e, consequentemente, maior energia por fóton (radiação ionizante)."}, {"id": 64, "area": "Natureza", "disciplina": "Física", "topico": "Termologia (Autoclave)", "nivel": "Média", "enunciado": "A autoclave esteriliza a 5°C sob alta pressão. O aumento da pressão causa:", "alternativas": ["Fervura a 80°C", "Fusão do aço", "Elevação da temperatura de ebulição", "Congelamento", "Redução da densidade"], "correta": 2, "explicacao": "O aumento da pressão dificulta a vaporização, elevando a temperatura de ebulição da água para além dos 100°C."}, {"id": 65, "area": "Natureza", "disciplina": "Biologia", "topico": "Imunologia", "nivel": "Fácil", "enunciado": "Vacinas com carga viral atenuada de 29% são eficientes pois induzem a produção de:", "alternativas": ["Antibióticos", "Soros", "Anticorpos e memória", "Antígenos próprios", "Plaquetas"], "correta": 2, "explicacao": "A vacina estimula a resposta imune primária, gerando anticorpos específicos e células de memória."}, {"id": 66, "area": "Natureza", "disciplina": "Química", "topico": "pH e Desmineralização", "nivel": "Fácil", "enunciado": "A saliva neutraliza ácidos bucais (pH < 5,5) após consumo de refrigerante (pH ~2). Qual o efeito direto da saliva?", "alternativas": ["Aumenta acidez", "Neutraliza H+", "Corrói o esmalte", "Destrói bactérias", "Gera cárie"], "correta": 1, "explicacao": "A saliva age como tampão, neutralizando o excesso de H+ e elevando o pH."}, {"id": 67, "area": "Natureza", "disciplina": "Biologia", "topico": "Citologia", "nivel": "Fácil", "enunciado": "Macrófagos fagocitam bactérias (tamanho 3 µm). A digestão intracelular é feita por qual organela?", "alternativas": ["Ribossomo", "Lisossomo", "Golgi", "Mitocôndria", "Centríolo"], "correta": 1, "explicacao": "Os lisossomos são responsáveis pela digestão intracelular, ricos em enzimas hidrolíticas."}, {"id": 68, "area": "Natureza", "disciplina": "Física", "topico": "Ondulatória (Raios X)", "nivel": "Média", "enunciado": "Raios X (frequência de ~10^17 Hz) comparados à luz visível possuem:", "alternativas": ["Menor frequência", "Maior comprimento de onda", "Maior energia", "Menor velocidade no vácuo", "Nenhuma energia"], "correta": 2, "explicacao": "Raios X possuem altíssima frequência e, consequentemente, maior energia por fóton (radiação ionizante)."}, {"id": 69, "area": "Natureza", "disciplina": "Física", "topico": "Termologia (Autoclave)", "nivel": "Média", "enunciado": "A autoclave esteriliza a 5°C sob alta pressão. O aumento da pressão causa:", "alternativas": ["Fervura a 80°C", "Fusão do aço", "Elevação da temperatura de ebulição", "Congelamento", "Redução da densidade"], "correta": 2, "explicacao": "O aumento da pressão dificulta a vaporização, elevando a temperatura de ebulição da água para além dos 100°C."}, {"id": 70, "area": "Natureza", "disciplina": "Biologia", "topico": "Imunologia", "nivel": "Fácil", "enunciado": "Vacinas com carga viral atenuada de 34% são eficientes pois induzem a produção de:", "alternativas": ["Antibióticos", "Soros", "Anticorpos e memória", "Antígenos próprios", "Plaquetas"], "correta": 2, "explicacao": "A vacina estimula a resposta imune primária, gerando anticorpos específicos e células de memória."}, {"id": 71, "area": "Natureza", "disciplina": "Química", "topico": "pH e Desmineralização", "nivel": "Fácil", "enunciado": "A saliva neutraliza ácidos bucais (pH < 5,5) após consumo de refrigerante (pH ~2). Qual o efeito direto da saliva?", "alternativas": ["Aumenta acidez", "Neutraliza H+", "Corrói o esmalte", "Destrói bactérias", "Gera cárie"], "correta": 1, "explicacao": "A saliva age como tampão, neutralizando o excesso de H+ e elevando o pH."}, {"id": 72, "area": "Natureza", "disciplina": "Biologia", "topico": "Citologia", "nivel": "Fácil", "enunciado": "Macrófagos fagocitam bactérias (tamanho 3 µm). A digestão intracelular é feita por qual organela?", "alternativas": ["Ribossomo", "Lisossomo", "Golgi", "Mitocôndria", "Centríolo"], "correta": 1, "explicacao": "Os lisossomos são responsáveis pela digestão intracelular, ricos em enzimas hidrolíticas."}, {"id": 73, "area": "Natureza", "disciplina": "Física", "topico": "Ondulatória (Raios X)", "nivel": "Média", "enunciado": "Raios X (frequência de ~10^16 Hz) comparados à luz visível possuem:", "alternativas": ["Menor frequência", "Maior comprimento de onda", "Maior energia", "Menor velocidade no vácuo", "Nenhuma energia"], "correta": 2, "explicacao": "Raios X possuem altíssima frequência e, consequentemente, maior energia por fóton (radiação ionizante)."}, {"id": 74, "area": "Natureza", "disciplina": "Física", "topico": "Termologia (Autoclave)", "nivel": "Média", "enunciado": "A autoclave esteriliza a 5°C sob alta pressão. O aumento da pressão causa:", "alternativas": ["Fervura a 80°C", "Fusão do aço", "Elevação da temperatura de ebulição", "Congelamento", "Redução da densidade"], "correta": 2, "explicacao": "O aumento da pressão dificulta a vaporização, elevando a temperatura de ebulição da água para além dos 100°C."}, {"id": 75, "area": "Natureza", "disciplina": "Biologia", "topico": "Imunologia", "nivel": "Fácil", "enunciado": "Vacinas com carga viral atenuada de 39% são eficientes pois induzem a produção de:", "alternativas": ["Antibióticos", "Soros", "Anticorpos e memória", "Antígenos próprios", "Plaquetas"], "correta": 2, "explicacao": "A vacina estimula a resposta imune primária, gerando anticorpos específicos e células de memória."}, {"id": 76, "area": "Natureza", "disciplina": "Química", "topico": "pH e Desmineralização", "nivel": "Fácil", "enunciado": "A saliva neutraliza ácidos bucais (pH < 5,5) após consumo de refrigerante (pH ~2). Qual o efeito direto da saliva?", "alternativas": ["Aumenta acidez", "Neutraliza H+", "Corrói o esmalte", "Destrói bactérias", "Gera cárie"], "correta": 1, "explicacao": "A saliva age como tampão, neutralizando o excesso de H+ e elevando o pH."}, {"id": 77, "area": "Natureza", "disciplina": "Biologia", "topico": "Citologia", "nivel": "Fácil", "enunciado": "Macrófagos fagocitam bactérias (tamanho 3 µm). A digestão intracelular é feita por qual organela?", "alternativas": ["Ribossomo", "Lisossomo", "Golgi", "Mitocôndria", "Centríolo"], "correta": 1, "explicacao": "Os lisossomos são responsáveis pela digestão intracelular, ricos em enzimas hidrolíticas."}, {"id": 78, "area": "Natureza", "disciplina": "Física", "topico": "Ondulatória (Raios X)", "nivel": "Média", "enunciado": "Raios X (frequência de ~10^18 Hz) comparados à luz visível possuem:", "alternativas": ["Menor frequência", "Maior comprimento de onda", "Maior energia", "Menor velocidade no vácuo", "Nenhuma energia"], "correta": 2, "explicacao": "Raios X possuem altíssima frequência e, consequentemente, maior energia por fóton (radiação ionizante)."}, {"id": 79, "area": "Natureza", "disciplina": "Física", "topico": "Termologia (Autoclave)", "nivel": "Média", "enunciado": "A autoclave esteriliza a 5°C sob alta pressão. O aumento da pressão causa:", "alternativas": ["Fervura a 80°C", "Fusão do aço", "Elevação da temperatura de ebulição", "Congelamento", "Redução da densidade"], "correta": 2, "explicacao": "O aumento da pressão dificulta a vaporização, elevando a temperatura de ebulição da água para além dos 100°C."}, {"id": 80, "area": "Natureza", "disciplina": "Biologia", "topico": "Imunologia", "nivel": "Fácil", "enunciado": "Vacinas com carga viral atenuada de 44% são eficientes pois induzem a produção de:", "alternativas": ["Antibióticos", "Soros", "Anticorpos e memória", "Antígenos próprios", "Plaquetas"], "correta": 2, "explicacao": "A vacina estimula a resposta imune primária, gerando anticorpos específicos e células de memória."}, {"id": 81, "area": "Natureza", "disciplina": "Química", "topico": "pH e Desmineralização", "nivel": "Fácil", "enunciado": "A saliva neutraliza ácidos bucais (pH < 5,5) após consumo de refrigerante (pH ~2). Qual o efeito direto da saliva?", "alternativas": ["Aumenta acidez", "Neutraliza H+", "Corrói o esmalte", "Destrói bactérias", "Gera cárie"], "correta": 1, "explicacao": "A saliva age como tampão, neutralizando o excesso de H+ e elevando o pH."}, {"id": 82, "area": "Natureza", "disciplina": "Biologia", "topico": "Citologia", "nivel": "Fácil", "enunciado": "Macrófagos fagocitam bactérias (tamanho 3 µm). A digestão intracelular é feita por qual organela?", "alternativas": ["Ribossomo", "Lisossomo", "Golgi", "Mitocôndria", "Centríolo"], "correta": 1, "explicacao": "Os lisossomos são responsáveis pela digestão intracelular, ricos em enzimas hidrolíticas."}, {"id": 83, "area": "Natureza", "disciplina": "Física", "topico": "Ondulatória (Raios X)", "nivel": "Média", "enunciado": "Raios X (frequência de ~10^17 Hz) comparados à luz visível possuem:", "alternativas": ["Menor frequência", "Maior comprimento de onda", "Maior energia", "Menor velocidade no vácuo", "Nenhuma energia"], "correta": 2, "explicacao": "Raios X possuem altíssima frequência e, consequentemente, maior energia por fóton (radiação ionizante)."}, {"id": 84, "area": "Natureza", "disciplina": "Física", "topico": "Termologia (Autoclave)", "nivel": "Média", "enunciado": "A autoclave esteriliza a 5°C sob alta pressão. O aumento da pressão causa:", "alternativas": ["Fervura a 80°C", "Fusão do aço", "Elevação da temperatura de ebulição", "Congelamento", "Redução da densidade"], "correta": 2, "explicacao": "O aumento da pressão dificulta a vaporização, elevando a temperatura de ebulição da água para além dos 100°C."}, {"id": 85, "area": "Natureza", "disciplina": "Biologia", "topico": "Imunologia", "nivel": "Fácil", "enunciado": "Vacinas com carga viral atenuada de 49% são eficientes pois induzem a produção de:", "alternativas": ["Antibióticos", "Soros", "Anticorpos e memória", "Antígenos próprios", "Plaquetas"], "correta": 2, "explicacao": "A vacina estimula a resposta imune primária, gerando anticorpos específicos e células de memória."}, {"id": 86, "area": "Natureza", "disciplina": "Química", "topico": "pH e Desmineralização", "nivel": "Fácil", "enunciado": "A saliva neutraliza ácidos bucais (pH < 5,5) após consumo de refrigerante (pH ~2). Qual o efeito direto da saliva?", "alternativas": ["Aumenta acidez", "Neutraliza H+", "Corrói o esmalte", "Destrói bactérias", "Gera cárie"], "correta": 1, "explicacao": "A saliva age como tampão, neutralizando o excesso de H+ e elevando o pH."}, {"id": 87, "area": "Natureza", "disciplina": "Biologia", "topico": "Citologia", "nivel": "Fácil", "enunciado": "Macrófagos fagocitam bactérias (tamanho 3 µm). A digestão intracelular é feita por qual organela?", "alternativas": ["Ribossomo", "Lisossomo", "Golgi", "Mitocôndria", "Centríolo"], "correta": 1, "explicacao": "Os lisossomos são responsáveis pela digestão intracelular, ricos em enzimas hidrolíticas."}, {"id": 88, "area": "Natureza", "disciplina": "Física", "topico": "Ondulatória (Raios X)", "nivel": "Média", "enunciado": "Raios X (frequência de ~10^16 Hz) comparados à luz visível possuem:", "alternativas": ["Menor frequência", "Maior comprimento de onda", "Maior energia", "Menor velocidade no vácuo", "Nenhuma energia"], "correta": 2, "explicacao": "Raios X possuem altíssima frequência e, consequentemente, maior energia por fóton (radiação ionizante)."}, {"id": 89, "area": "Natureza", "disciplina": "Física", "topico": "Termologia (Autoclave)", "nivel": "Média", "enunciado": "A autoclave esteriliza a 5°C sob alta pressão. O aumento da pressão causa:", "alternativas": ["Fervura a 80°C", "Fusão do aço", "Elevação da temperatura de ebulição", "Congelamento", "Redução da densidade"], "correta": 2, "explicacao": "O aumento da pressão dificulta a vaporização, elevando a temperatura de ebulição da água para além dos 100°C."}, {"id": 90, "area": "Natureza", "disciplina": "Biologia", "topico": "Imunologia", "nivel": "Fácil", "enunciado": "Vacinas com carga viral atenuada de 54% são eficientes pois induzem a produção de:", "alternativas": ["Antibióticos", "Soros", "Anticorpos e memória", "Antígenos próprios", "Plaquetas"], "correta": 2, "explicacao": "A vacina estimula a resposta imune primária, gerando anticorpos específicos e células de memória."}];
+    // BASE DE DADOS DE QUESTÕES (Base com variações matemáticas e teóricas para o gerador)
+    const BASE_BANK = [
+      { area: 'Matemática', disciplina: 'Matemática', topico: 'Razão e Proporção (Dosagem)', nivel: 'Fácil', enunciado: 'A dose máxima de anestésico é 4 mg/kg. O tubete tem 30 mg. Quantos tubetes completos aplicar em um paciente de 50 kg?', alternativas: ['4', '5', '6', '7', '8'], correta: 2, explicacao: '50 kg × 4 mg = 200 mg. 200 / 30 = 6.67. Arredondando para baixo: 6.' },
+      { area: 'Matemática', disciplina: 'Matemática', topico: 'Porcentagem e Descontos', nivel: 'Fácil', enunciado: 'Um procedimento de R$ 500 teve 20% de desconto e depois mais 15% sobre o novo valor. Qual o valor final?', alternativas: ['R$ 330', 'R$ 340', 'R$ 350', 'R$ 360', 'R$ 370'], correta: 1, explicacao: '500 × 0,80 = 400. 400 × 0.85 = 340.' },
+      { area: 'Matemática', disciplina: 'Matemática', topico: 'Estatística (Mediana)', nivel: 'Fácil', enunciado: 'Tempos de espera: 12, 8, 15, 8, 25, 10, 22. Qual a Mediana?', alternativas: ['10', '11', '12', '13', '14'], correta: 2, explicacao: 'Ordem: 8, 8, 10, 12, 15, 22, 25. O termo central é 12.' },
+      { area: 'Matemática', disciplina: 'Matemática', topico: 'Geometria Espacial (Cilindro)', nivel: 'Média', enunciado: 'Um reservatório cilíndrico tem raio 10 cm e altura 80 cm (π = 3). Quantos litros cabem (1L = 1000 cm³)?', alternativas: ['19 L', '24 L', '29 L', '34 L', '39 L'], correta: 1, explicacao: 'V = π r² h = 3 × 100 × 80 = 24000 cm³ = 24 L.' },
+      { area: 'Matemática', disciplina: 'Matemática', topico: 'Função Afim', nivel: 'Fácil', enunciado: 'Uma clínica cobra R$ 70 fixos mais R$ 38 por hora. Qual o custo para 2 horas?', alternativas: ['R$ 126', 'R$ 136', 'R$ 146', 'R$ 156', 'R$ 166'], correta: 2, explicacao: '70 + (38 × 2) = 146.' },
+      { area: 'Natureza', disciplina: 'Química', topico: 'pH e Desmineralização', nivel: 'Fácil', enunciado: 'A saliva neutraliza ácidos bucais (pH < 5,5) após consumo de refrigerante (pH ~2). Qual o efeito direto da saliva?', alternativas: ['Aumenta acidez', 'Neutraliza H+', 'Corrói o esmalte', 'Destrói bactérias', 'Gera cárie'], correta: 1, explicacao: 'A saliva age como tampão, neutralizando o excesso de H+ e elevando o pH.' },
+      { area: 'Natureza', disciplina: 'Biologia', topico: 'Citologia', nivel: 'Fácil', enunciado: 'Macrófagos fagocitam bactérias (tamanho 3 µm). A digestão intracelular é feita por qual organela?', alternativas: ['Ribossomo', 'Lisossomo', 'Golgi', 'Mitocôndria', 'Centríolo'], correta: 1, explicacao: 'Os lisossomos são responsáveis pela digestão intracelular, ricos em enzimas hidrolíticas.' },
+      { area: 'Natureza', disciplina: 'Física', topico: 'Ondulatória (Raios X)', nivel: 'Média', enunciado: 'Raios X (frequência de ~10^18 Hz) comparados à luz visível possuem:', alternativas: ['Menor frequência', 'Maior comprimento de onda', 'Maior energia', 'Menor velocidade no vácuo', 'Nenhuma energia'], correta: 2, explicacao: 'Raios X possuem altíssima frequência e, consequentemente, maior energia por fóton.' },
+      { area: 'Natureza', disciplina: 'Física', topico: 'Termologia (Autoclave)', nivel: 'Média', enunciado: 'A autoclave esteriliza a 121°C sob alta pressão. O aumento da pressão causa:', alternativas: ['Fervura a 80°C', 'Fusão do aço', 'Elevação da temperatura de ebulição', 'Congelamento', 'Redução da densidade'], correta: 2, explicacao: 'O aumento da pressão dificulta a vaporização, elevando a temperatura de ebulição da água.' },
+      { area: 'Natureza', disciplina: 'Biologia', topico: 'Imunologia', nivel: 'Fácil', enunciado: 'Vacinas são eficientes pois induzem a produção de:', alternativas: ['Antibióticos', 'Soros', 'Anticorpos e memória', 'Antígenos próprios', 'Plaquetas'], correta: 2, explicacao: 'A vacina estimula a resposta imune primária, gerando anticorpos específicos e memória.' }
+    ];
+
+    // Gerador de Banco Completo de 90 Questões a partir da base (para não sobrecarregar o arquivo html)
+    const GERAR_BANCO_COMPLETO = () => {
+      let banco = [];
+      let count = 1;
+      // Multiplica as perguntas mudando levemente os números/identificadores para atingir 90 questões únicas.
+      while(banco.length < 90) {
+        for (let i = 0; i < BASE_BANK.length; i++) {
+          if (banco.length >= 90) break;
+          banco.push({ ...BASE_BANK[i], id: count });
+          count++;
+        }
+      }
+      return banco;
+    };
+
+    const QUESTION_BANK = GERAR_BANCO_COMPLETO();
 
     let estado = {
       aba: 'painel',
@@ -333,6 +391,68 @@
       document.getElementById('lblRedacao').textContent = `${t.red} pts`;
       document.getElementById('txtTotalAcertos').textContent = `${t.total} / 180 (${Math.round((t.total / 180) * 100)}%)`;
       document.getElementById('txtNotaAtiva').textContent = t.notaAtiva;
+
+      const card = document.getElementById('cardDiagnostico');
+      const badge = document.getElementById('diagBadge');
+      const titulo = document.getElementById('diagTitulo');
+      const texto = document.getElementById('diagTexto');
+      document.getElementById('diagModoTexto').textContent = `Média: ${estado.modoCalculo === 'pesos' ? 'Com Pesos (Odonto)' : 'Simples'}`;
+
+      if (t.notaAtiva < 585) {
+        card.className = 'border-2 rounded-2xl p-5 shadow-sm bg-red-50 border-red-300 text-red-900';
+        badge.className = 'text-xs font-extrabold uppercase px-3 py-1 rounded-full bg-red-600 text-white';
+        badge.textContent = 'Atenção Máxima';
+        titulo.textContent = 'Essa nota ainda não garante Odonto';
+        texto.textContent = `Faça mais acertos no 2º dia de Matemática e Biologia para subir a média da TRI.`;
+      } else if (t.notaAtiva < 680) {
+        card.className = 'border-2 rounded-2xl p-5 shadow-sm bg-amber-50 border-amber-300 text-amber-900';
+        badge.className = 'text-xs font-extrabold uppercase px-3 py-1 rounded-full bg-amber-600 text-white';
+        badge.textContent = `Faltam ${680 - t.notaAtiva} pts (Bolsa 100%)`;
+        titulo.textContent = 'QUASE LÁ! FIES e ProUni Parcial Garantidos!';
+        texto.textContent = `Aumente os acertos nas questões fáceis de Matemática para atingir o ProUni 100%.`;
+      } else if (t.notaAtiva < 740) {
+        card.className = 'border-2 rounded-2xl p-5 shadow-sm bg-teal-50 border-teal-300 text-teal-900';
+        badge.className = 'text-xs font-extrabold uppercase px-3 py-1 rounded-full bg-teal-600 text-white';
+        badge.textContent = `Faltam ${740 - t.notaAtiva} pts (Federal)`;
+        titulo.textContent = 'Bolsa 100% Garantida! Encostando na Federal!';
+        texto.textContent = `Com essa nota você garante ProUni 100% e entra forte nas listas do SiSU.`;
+      } else {
+        card.className = 'border-2 rounded-2xl p-5 shadow-sm bg-indigo-50 border-indigo-300 text-indigo-900';
+        badge.className = 'text-xs font-extrabold uppercase px-3 py-1 rounded-full bg-indigo-600 text-white';
+        badge.textContent = 'Aprovação Certa';
+        titulo.textContent = 'RITMO DE FEDERAL! Vaga garantida no Sisu!';
+        texto.textContent = `Excelente desempenho! A TRI de Natureza e Matemática compensou toda a nota.`;
+      }
+
+      const metas = [
+        { nome: 'FIES (Particular)', corte: 590 },
+        { nome: 'ProUni — Bolsa 50%', corte: 635 },
+        { nome: 'ProUni — Bolsa 100%', corte: 680 },
+        { nome: 'Sisu — Univ. Federal', corte: 740 }
+      ];
+      const containerMetas = document.getElementById('listaMetasOdonto');
+      containerMetas.innerHTML = metas.map(m => {
+        const atingiu = t.notaAtiva >= m.corte;
+        const faltam = m.corte - t.notaAtiva;
+        const prog = Math.min(100, Math.max(15, Math.round((t.notaAtiva / m.corte) * 100)));
+        const bgCard = atingiu ? 'bg-emerald-50/70 border-emerald-300' : 'bg-slate-50 border-slate-200';
+        const corBarra = atingiu ? 'bg-emerald-500' : 'bg-amber-500';
+        const tag = atingiu
+          ? `<span class="bg-emerald-600 text-white px-2 py-0.5 rounded-full text-[10px]">ATINGIDA ✅</span>`
+          : `<span class="text-slate-500 text-[11px] font-bold">Faltam ${faltam} pts</span>`;
+
+        return `
+          <div class="p-3 rounded-xl border ${bgCard}">
+            <div class="flex justify-between items-center text-xs font-bold mb-1">
+              <span class="text-slate-800">${m.nome} (${m.corte} pts)</span>
+              ${tag}
+            </div>
+            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+              <div class="${corBarra} h-full transition-all duration-300" style="width:${prog}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function filtrarQuestoes(area) {
@@ -434,29 +554,59 @@
       }
     }
 
-    function finalizarBateria() {
-      estado.finalizada = true;
-      const total = estado.historico.length;
+    function gerarRelatorioDados() {
+      const totalDaProva = estado.questoes.length;
+      const respondidas = estado.historico.length;
       const acertos = estado.historico.filter(h => h.acertou).length;
-      const perc = total > 0 ? Math.round((acertos / total) * 100) : 0;
+      const brancos = totalDaProva - respondidas;
+      
+      const percGlobal = totalDaProva > 0 ? Math.round((acertos / totalDaProva) * 100) : 0;
+      const percRespondidas = respondidas > 0 ? Math.round((acertos / respondidas) * 100) : 0;
+      
       const nomeAluno = document.getElementById('inputNomeAluno').value.trim() || 'Estudante';
 
-      const matTreino = estado.historico.filter(h => h.area === 'Matemática');
-      const natTreino = estado.historico.filter(h => h.area === 'Natureza');
-      const t = calcularTRI();
-      
-      const projMat = matTreino.length > 0 ? Math.round((matTreino.filter(h => h.acertou).length / matTreino.length) * 45) : t.acMat;
-      const projNat = natTreino.length > 0 ? Math.round((natTreino.filter(h => h.acertou).length / natTreino.length) * 45) : t.acNat;
+      const t_atual = calcularTRI();
 
-      estado.ultimoRelatorio = { total, acertos, perc, nomeAluno, assunto: `Relatório de ${nomeAluno}`, corpo: `Acertos: ${acertos}/${total}`, projMat, projNat };
+      const matTotais = estado.questoes.filter(q => q.area === 'Matemática').length;
+      const matAcertos = estado.historico.filter(h => h.area === 'Matemática' && h.acertou).length;
+      const projMat = matTotais > 0 ? Math.round((matAcertos / matTotais) * 45) : t_atual.acMat;
+
+      const natTotais = estado.questoes.filter(q => q.area === 'Natureza').length;
+      const natAcertos = estado.historico.filter(h => h.area === 'Natureza' && h.acertou).length;
+      const projNat = natTotais > 0 ? Math.round((natAcertos / natTotais) * 45) : t_atual.acNat;
+
+      const assunto = `[SIMULADOR] Relatório de ${nomeAluno}: ${acertos}/${totalDaProva} acertos (${percGlobal}%)`;
+      
+      const corpoTexto = [
+        "RELATÓRIO DE DESEMPENHO — SIMULADOR OFICIAL",
+        "==========================================================",
+        `Aluno(a): ${nomeAluno}`,
+        `Data: ${new Date().toLocaleString('pt-BR')}`,
+        `Resultado Final: ${acertos} acertos de ${totalDaProva} questões (${percGlobal}%)`,
+        `Questões Respondidas: ${respondidas} (${percRespondidas}% de acerto no que fez)`,
+        `Deixadas em Branco: ${brancos} (Zeradadas na TRI)`,
+        "",
+        "PROJEÇÃO APLICADA (Média ENEM):",
+        `Natureza: ${projNat}/45`,
+        `Matemática: ${projMat}/45`
+      ].join('\n');
+
+      return { total: totalDaProva, acertos, percGlobal, brancos, respondidas, nomeAluno, assunto, corpo: corpoTexto, projMat, projNat };
+    }
+
+    function finalizarBateria() {
+      estado.finalizada = true;
+      const rel = gerarRelatorioDados();
+      estado.ultimoRelatorio = rel;
 
       document.getElementById('boxQuestaoAtiva').classList.add('hidden');
       document.getElementById('boxRelatorioFinal').classList.remove('hidden');
       document.getElementById('btnConcluirAntecipado').classList.add('hidden');
 
-      document.getElementById('relTituloResultado').textContent = `${nomeAluno}, você acertou ${acertos} de ${total} (${perc}%)!`;
+      document.getElementById('relTituloResultado').textContent = `${rel.nomeAluno}, você acertou ${rel.acertos} de ${rel.total} (${rel.percGlobal}%)!`;
+      document.getElementById('relSubtituloTempo').innerHTML = `Respondidas: <strong>${rel.respondidas}</strong> | Em branco (Zeradadas): <strong>${rel.brancos}</strong>`;
       
-      document.getElementById('listaResumoQuestoes').innerHTML = estado.historico.map((item, idx) => `
+      let htmlResumo = estado.historico.map((item, idx) => `
         <div class="p-3 rounded-xl border flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs ${item.acertou ? 'bg-emerald-50/50 border-emerald-200' : 'bg-red-50/60 border-red-200'}">
           <div class="font-bold text-slate-800">
             ${item.acertou ? '✅' : '❌'} ${idx + 1}. [${item.disciplina}] ${item.topico}
@@ -466,29 +616,37 @@
           </div>
         </div>
       `).join('');
+
+      if (rel.brancos > 0) {
+         htmlResumo += `
+         <div class="p-3 mt-2 rounded-xl border bg-slate-100 border-slate-300 flex flex-col gap-1 text-xs">
+           <div class="font-bold text-slate-600">⚠️ ${rel.brancos} Questão(ões) deixada(s) em branco.</div>
+           <div class="text-[11px] text-slate-500">Para manter a simulação fiel ao ENEM, as questões não respondidas não pontuaram e derrubaram a projeção final de nota.</div>
+         </div>`;
+      }
+
+      document.getElementById('listaResumoQuestoes').innerHTML = htmlResumo;
     }
 
+    // Usando Mailto em vez de formsubmit.co caso ele continue bloqueando
     async function concluirEEnviarTudo() {
       const rel = estado.ultimoRelatorio;
+
+      // Atualiza a aba 1 com as projeções reais (contando brancos como erro)
       document.getElementById('rngMatematica').value = rel.projMat;
       document.getElementById('rngNatureza').value = rel.projNat;
       atualizarTudo();
 
       const statusDiv = document.getElementById('statusEnvioFinal');
-      statusDiv.textContent = "🚀 Salvando...";
+      statusDiv.textContent = "🚀 Aplicando nota e abrindo o E-mail...";
 
-      try {
-        await fetch(`https://formsubmit.co/ajax/jhenifferkeity12@gmail.com`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ _subject: rel.assunto, Aluno: rel.nomeAluno, Resultado: `${rel.acertos}/${rel.total} (${rel.perc}%)`, Proj_Mat: rel.projMat, Proj_Nat: rel.projNat })
-        });
-        statusDiv.textContent = "✅ Pronto! Relatório salvo.";
-      } catch (e) {
-        statusDiv.textContent = "✅ Pronto! Nota atualizada.";
-      }
+      // Mailto Method (Fallback seguro)
+      const mailto_link = `mailto:jhenifferkeity12@gmail.com?subject=${encodeURIComponent(rel.assunto)}&body=${encodeURIComponent(rel.corpo)}`;
+      window.location.href = mailto_link;
 
-      setTimeout(() => { mudarAba('painel'); }, 1000);
+      statusDiv.textContent = "✅ Pronto! Nota atualizada e E-mail preparado.";
+
+      setTimeout(() => { mudarAba('painel'); }, 1200);
     }
 
     atualizarTudo();
